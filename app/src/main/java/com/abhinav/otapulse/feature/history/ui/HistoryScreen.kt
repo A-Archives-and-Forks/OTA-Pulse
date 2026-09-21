@@ -75,12 +75,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.abhinav.otapulse.core.common.FormatUtils
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.model.OtaHistoryEntry
 import com.abhinav.otapulse.core.ui.components.EmptyState
 import com.abhinav.otapulse.core.ui.components.FloatingSearchBar
 import com.abhinav.otapulse.core.ui.components.OtaCard
 import com.abhinav.otapulse.core.ui.components.OtaPrimaryButton
+import com.abhinav.otapulse.core.ui.components.stackItemAppearance
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -103,6 +105,7 @@ fun HistoryScreen(
     devicesViewModel: DevicesViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val view = androidx.compose.ui.platform.LocalView.current
     val historyList by historyViewModel.historyFlow.collectAsState()
     val devicesUiState by devicesViewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -212,7 +215,7 @@ fun HistoryScreen(
 
                     Box {
                         IconButton(onClick = {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.TICK)
                             showMenu = true
                         }) {
                             Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = stringResource(R.string.history_more_options_cd))
@@ -279,7 +282,7 @@ fun HistoryScreen(
                         message = stringResource(R.string.history_empty_msg),
                         actionLabel = stringResource(R.string.history_import_json),
                         onAction = {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             importLauncher.launch(arrayOf("application/json"))
                         },
                         modifier = Modifier.align(Alignment.Center)
@@ -302,14 +305,14 @@ fun HistoryScreen(
                         itemsIndexed(
                             items = filteredList,
                             key = { index, entry -> "${entry.timestamp}_${entry.deviceName}_${entry.otaUpdate.versionName}_$index" }
-                        ) { _, entry ->
+                        ) { index, entry ->
                             HistoryEntryCard(
                                 entry = entry,
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.CLICK)
                                     devicesViewModel.showOtaDetailsFromHistory(entry)
                                 },
-                                modifier = Modifier.animateItem()
+                                modifier = Modifier.stackItemAppearance(index, searchQuery).animateItem()
                             )
                         }
                     }
@@ -506,3 +509,5 @@ private fun HistoryEntryCard(
         }
     }
 }
+
+

@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -60,7 +61,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.abhinav.otapulse.R
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.ui.components.LoadingState
 import com.abhinav.otapulse.core.ui.components.OtaCard
 import com.abhinav.otapulse.core.ui.components.OtaOutlinedButton
@@ -78,6 +80,7 @@ fun LinkResolverScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val context = LocalContext.current
+    val view = LocalView.current
 
     var inputUrl by remember { mutableStateOf("") }
 
@@ -92,7 +95,7 @@ fun LinkResolverScreen(
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         onNavigateBack()
                     }) {
                         Icon(
@@ -211,7 +214,7 @@ fun LinkResolverScreen(
                                         if (inputUrl.isNotEmpty()) {
                                             IconButton(
                                                 onClick = {
-                                                    context.performHapticFeedback()
+                                                    view.haptic(HapticType.CLICK)
                                                     inputUrl = ""
                                                 },
                                                 modifier = Modifier.size(32.dp)
@@ -226,7 +229,7 @@ fun LinkResolverScreen(
                                         } else {
                                             IconButton(
                                                 onClick = {
-                                                    context.performHapticFeedback()
+                                                    view.haptic(HapticType.CLICK)
                                                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                                     val clipData = clipboard.primaryClip
                                                     if (clipData != null && clipData.itemCount > 0) {
@@ -254,7 +257,7 @@ fun LinkResolverScreen(
                         OtaPrimaryButton(
                             text = stringResource(R.string.link_resolver_action_btn),
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 val trimmed = inputUrl.trim()
                                 if (trimmed.isBlank()) {
                                     Toast.makeText(context, context.getString(R.string.toast_paste_ota_url_first), Toast.LENGTH_SHORT).show()
@@ -327,7 +330,7 @@ fun LinkResolverScreen(
                                     text = stringResource(R.string.link_resolver_copy_btn),
                                     icon = Icons.Rounded.ContentCopy,
                                     onClick = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                         clipboard.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.tools_link_resolver_title), result.resolvedUrl))
                                         Toast.makeText(context, context.getString(R.string.toast_resolved_link_copied), Toast.LENGTH_SHORT).show()
@@ -339,7 +342,7 @@ fun LinkResolverScreen(
                                     text = stringResource(R.string.button_share),
                                     icon = Icons.Rounded.Share,
                                     onClick = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         val sendIntent: Intent = Intent().apply {
                                             action = Intent.ACTION_SEND
                                             putExtra(Intent.EXTRA_TEXT, result.resolvedUrl)
@@ -358,3 +361,4 @@ fun LinkResolverScreen(
         }
     }
 }
+

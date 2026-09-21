@@ -46,3 +46,4 @@ object LocaleHelper {
         return locale.getDisplayName(locale).replaceFirstChar { it.uppercase() }
     }
 }
+

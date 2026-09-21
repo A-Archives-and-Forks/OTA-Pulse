@@ -61,3 +61,4 @@ fun WavyProgressIndicator(
         modifier = modifier.size(size)
     )
 }
+

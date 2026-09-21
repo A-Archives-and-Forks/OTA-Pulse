@@ -54,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -61,7 +62,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import com.abhinav.otapulse.R
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.preferences.AppSettingsPreferences
 
 private const val DESKTOP_VIEWPORT_SCRIPT = """
@@ -85,6 +87,7 @@ fun InAppBrowserScreen(
     onFinish: () -> Unit
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
     val configuration = LocalConfiguration.current
     val screenWidthDp = configuration.screenWidthDp
 
@@ -152,7 +155,7 @@ fun InAppBrowserScreen(
             }
             if (!url.isNullOrBlank()) reload()
         }
-        context.performHapticFeedback()
+        view.haptic(HapticType.CLICK)
     }
 
     BackHandler(enabled = true) {
@@ -183,7 +186,7 @@ fun InAppBrowserScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = {
-                    context.performHapticFeedback()
+                    view.haptic(HapticType.TICK)
                     onFinish()
                 }) {
                     Icon(
@@ -249,7 +252,7 @@ fun InAppBrowserScreen(
                 }
 
                 IconButton(onClick = {
-                    context.performHapticFeedback()
+                    view.haptic(HapticType.CLICK)
                     openExternally(context, currentUrl)
                 }) {
                     Icon(
@@ -381,7 +384,7 @@ fun InAppBrowserScreen(
                         ) {
                             IconButton(
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.TICK)
                                     webViewInstance?.goBack()
                                     webViewInstance?.let {
                                         canGoBack = it.canGoBack()
@@ -399,7 +402,7 @@ fun InAppBrowserScreen(
 
                             IconButton(
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.TICK)
                                     webViewInstance?.goForward()
                                     webViewInstance?.let {
                                         canGoBack = it.canGoBack()
@@ -418,7 +421,7 @@ fun InAppBrowserScreen(
 
                             IconButton(
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.TICK)
                                     webViewInstance?.reload()
                                 }
                             ) {
@@ -443,7 +446,7 @@ fun InAppBrowserScreen(
 
                             IconButton(
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.CLICK)
                                     val url = webViewInstance?.url ?: currentUrl
                                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                     clipboard.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.button_copy_link), url))
@@ -459,7 +462,7 @@ fun InAppBrowserScreen(
 
                             IconButton(
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.CLICK)
                                     val url = webViewInstance?.url ?: currentUrl
                                     val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                         type = "text/plain"
@@ -503,3 +506,4 @@ private fun openExternally(context: Context, url: String) {
         Toast.makeText(context, R.string.could_not_open_link, Toast.LENGTH_SHORT).show()
     }
 }
+

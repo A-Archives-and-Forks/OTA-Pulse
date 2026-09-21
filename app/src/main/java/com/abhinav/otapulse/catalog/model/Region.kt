@@ -8,3 +8,4 @@ data class Region(
 ) {
     override fun toString(): String = "$name ($code)"
 }
+

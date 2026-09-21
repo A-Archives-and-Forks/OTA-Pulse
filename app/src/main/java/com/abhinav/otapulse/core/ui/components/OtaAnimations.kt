@@ -22,13 +22,17 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.runtime.Composable
+import com.abhinav.otapulse.core.ui.theme.LocalReduceMotion
 import com.abhinav.otapulse.core.ui.theme.OtaPulseMotion
 
 /**
  * A wrapper that provides a staggered entry animation for its content.
- * Ideal for lists and bento grids.
+ * Ideal for lists, bento grids, and section-based layouts.
+ *
+ * Animates with fade + slide up + scale-in for a premium stacking effect.
  */
 @Composable
 fun StaggeredItem(
@@ -36,17 +40,74 @@ fun StaggeredItem(
     index: Int,
     content: @Composable () -> Unit
 ) {
+    if (LocalReduceMotion.current) {
+        if (visible) {
+            content()
+        }
+        return
+    }
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn(
             animationSpec = tween(
-                durationMillis = 400,
-                delayMillis = index * OtaPulseMotion.StaggerDelayMs
+                durationMillis = OtaPulseMotion.StackEnterDuration,
+                delayMillis = index.coerceAtMost(OtaPulseMotion.StaggerMaxItems) * OtaPulseMotion.StaggerDelayMs
             )
         ) + slideInVertically(
             initialOffsetY = { it / 3 },
             animationSpec = spring(
                 dampingRatio = 0.8f,
+                stiffness = Spring.StiffnessLow
+            )
+        ) + scaleIn(
+            initialScale = 0.94f,
+            animationSpec = spring(
+                dampingRatio = 0.8f,
+                stiffness = Spring.StiffnessLow
+            )
+        ),
+        exit = fadeOut(
+            animationSpec = tween(durationMillis = OtaPulseMotion.StackExitDuration)
+        )
+    ) {
+        content()
+    }
+}
+
+/**
+ * Variant of [StaggeredItem] designed for screen-level section entrance.
+ * Uses slightly longer stagger for a more deliberate reveal.
+ */
+@Composable
+fun StaggeredSection(
+    visible: Boolean,
+    index: Int,
+    staggerDelayMs: Int = 60,
+    content: @Composable () -> Unit
+) {
+    if (LocalReduceMotion.current) {
+        if (visible) {
+            content()
+        }
+        return
+    }
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(
+            animationSpec = tween(
+                durationMillis = OtaPulseMotion.DurationMedium,
+                delayMillis = index * staggerDelayMs
+            )
+        ) + slideInVertically(
+            initialOffsetY = { it / 4 },
+            animationSpec = spring(
+                dampingRatio = 0.85f,
+                stiffness = Spring.StiffnessLow
+            )
+        ) + scaleIn(
+            initialScale = 0.96f,
+            animationSpec = spring(
+                dampingRatio = 0.85f,
                 stiffness = Spring.StiffnessLow
             )
         ),
@@ -55,3 +116,4 @@ fun StaggeredItem(
         content()
     }
 }
+

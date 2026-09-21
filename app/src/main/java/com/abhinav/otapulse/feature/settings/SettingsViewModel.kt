@@ -202,3 +202,4 @@ class SettingsViewModel @Inject constructor(
         _uiState.update { it.copy(toastMessage = null) }
     }
 }
+

@@ -15,3 +15,4 @@ data class OtaRequest(
     val reqMode: String? = "manual",
     val gray: Int = 0
 )
+

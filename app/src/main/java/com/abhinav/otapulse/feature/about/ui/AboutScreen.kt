@@ -103,7 +103,9 @@ import kotlinx.coroutines.delay
 import com.abhinav.otapulse.R
 import com.abhinav.otapulse.core.common.openExternalBrowser
 import com.abhinav.otapulse.core.common.openInAppBrowser
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
+import androidx.compose.ui.platform.LocalView
 import com.abhinav.otapulse.core.network.GitHubUpdater
 import com.abhinav.otapulse.core.network.UpdateInfo
 import com.abhinav.otapulse.core.ui.theme.OtaPulseMotion
@@ -122,6 +124,7 @@ fun AboutScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val context = LocalContext.current
+    val view = LocalView.current
 
     val currentVersion = remember {
         try {
@@ -219,7 +222,7 @@ fun AboutScreen(
                     remainingSeconds = remainingSeconds,
                     pendingUpdateInfo = pendingUpdateInfo,
                     onCheckOrInstallUpdate = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         if (pendingUpdateInfo != null) {
                             onNavigateToAppUpdate(pendingUpdateInfo)
                         } else if (!isCheckingUpdate && remainingSeconds == 0) {
@@ -231,7 +234,7 @@ fun AboutScreen(
                         }
                     },
                     onCopyVersion = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         clipboard.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.about_version_label), currentVersion))
                         Toast.makeText(context, context.getString(R.string.about_copied_version, currentVersion), Toast.LENGTH_SHORT).show()
@@ -254,7 +257,7 @@ fun AboutScreen(
                         tint = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             try {
                                 context.openExternalBrowser("https://remurusama.github.io/OTA-Pulse/")
                             } catch (e: Exception) {
@@ -270,7 +273,7 @@ fun AboutScreen(
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             try {
                                 context.openExternalBrowser("https://github.com/RemuruSama/OTA-Pulse")
                             } catch (e: Exception) {
@@ -286,7 +289,7 @@ fun AboutScreen(
                         tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             try {
                                 context.openInAppBrowser("https://t.me/abhinav_v1")
                             } catch (e: Exception) {
@@ -301,7 +304,7 @@ fun AboutScreen(
             StaggeredItem(visible = showSections, index = 2) {
                 MinimalCreatorCard(
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         try {
                             context.openInAppBrowser("https://t.me/CodeSenseiX")
                         } catch (e: Exception) {
@@ -318,7 +321,7 @@ fun AboutScreen(
                 MinimalSupportCard(
                     upiId = upiId,
                     onOpenPayPal = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         try {
                             context.openExternalBrowser("https://paypal.me/Abhinavftp?country.x=IN&locale.x=en_GB")
                         } catch (e: Exception) {
@@ -326,7 +329,7 @@ fun AboutScreen(
                         }
                     },
                     onCopyUpi = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         clipboard.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.about_upi_id_label), upiId))
                         Toast.makeText(context, upiCopiedToast, Toast.LENGTH_SHORT).show()
@@ -349,7 +352,7 @@ fun AboutScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             Toast.makeText(context, context.getString(R.string.about_engine_online) + " 🚀", Toast.LENGTH_SHORT).show()
                         }
                 )
@@ -794,3 +797,6 @@ private fun MinimalSupportCard(
         }
     }
 }
+
+
+

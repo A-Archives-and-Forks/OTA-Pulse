@@ -13,3 +13,4 @@ data class OtaHistoryEntity(
     val region: String,
     val otaUpdate: OtaUpdate
 )
+

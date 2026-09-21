@@ -149,3 +149,4 @@ object GitHubUpdater {
         return false // Equal versions
     }
 }
+

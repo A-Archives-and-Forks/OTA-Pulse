@@ -331,3 +331,4 @@ class HomeUpdateViewModel @Inject constructor(
             ?: componentVersion.substringBefore(".")
                 .let { base -> if (base.count { it == '_' } >= 3) base else componentVersion }
 }
+

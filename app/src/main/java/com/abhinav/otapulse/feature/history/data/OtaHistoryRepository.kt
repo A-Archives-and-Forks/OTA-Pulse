@@ -10,3 +10,4 @@ interface OtaHistoryRepository {
     suspend fun clearHistoryForDevice(deviceName: String)
     suspend fun clearAllHistory()
 }
+

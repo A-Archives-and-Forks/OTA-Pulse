@@ -129,3 +129,4 @@ val otaPulseBottomNavItems = listOf(
         selectedIcon = Icons.Filled.Settings
     )
 )
+

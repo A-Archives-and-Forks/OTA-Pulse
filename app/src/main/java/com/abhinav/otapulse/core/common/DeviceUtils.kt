@@ -240,3 +240,4 @@ object DeviceUtils {
         return fallback
     }
 }
+

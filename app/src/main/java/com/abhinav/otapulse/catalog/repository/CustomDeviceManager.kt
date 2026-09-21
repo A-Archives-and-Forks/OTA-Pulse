@@ -89,3 +89,4 @@ class CustomDeviceManager @Inject constructor(
         return DeviceCatalogParser.parseDevices(json, isCustom = true)
     }
 }
+

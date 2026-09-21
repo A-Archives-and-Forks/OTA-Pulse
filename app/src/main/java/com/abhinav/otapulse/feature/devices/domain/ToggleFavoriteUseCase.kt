@@ -8,3 +8,4 @@ class ToggleFavoriteUseCase @Inject constructor(private val deviceRepository: De
         deviceRepository.toggleFavoriteStatus(deviceName)
     }
 }
+

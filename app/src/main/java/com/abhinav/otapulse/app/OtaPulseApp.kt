@@ -85,7 +85,8 @@ import com.abhinav.otapulse.core.ui.theme.ThemeMode
 import com.abhinav.otapulse.core.ui.theme.HoloPrimary
 import com.abhinav.otapulse.core.ui.theme.HoloSecondary
 import com.abhinav.otapulse.core.ui.theme.holographicEdgeBrush
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.navigation.OtaPulseNavGraph
 import com.abhinav.otapulse.navigation.Screen
 import com.abhinav.otapulse.navigation.otaPulseBottomNavItems
@@ -93,6 +94,7 @@ import kotlinx.coroutines.flow.Flow
 
 import android.content.Context
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import com.abhinav.otapulse.feature.about.ui.WhatsNewHelper
 import com.abhinav.otapulse.feature.about.ui.WhatsNewSheet
 import com.abhinav.otapulse.feature.settings.AppUpdateRepository
@@ -122,6 +124,7 @@ fun OtaPulseApp(
     val currentDestination = navBackStackEntry?.destination
     val currentRoute = currentDestination?.route
     val context = LocalContext.current
+    val view = LocalView.current
 
     var whatsNewData by remember { mutableStateOf<Pair<String, String>?>(null) }
     var showSupportDeveloperDialog by remember { mutableStateOf(false) }
@@ -180,6 +183,7 @@ fun OtaPulseApp(
         seedColor = Color(themeSettings.seedColor),
         paletteStyle = themeSettings.paletteStyle
     ) {
+      com.abhinav.otapulse.core.ui.theme.MotionProvider {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -263,6 +267,7 @@ fun OtaPulseApp(
                 )
             }
         }
+      }
     }
 }
 
@@ -274,6 +279,7 @@ private fun OtaPulseBottomBar(
     items: List<com.abhinav.otapulse.navigation.BottomNavItem>
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
     val navBarsBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
     Box(
@@ -323,7 +329,7 @@ private fun OtaPulseBottomBar(
                             .background(color = if (selected) pillColor else Color.Transparent)
                             .clickable {
                                 if (!selected) {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.TICK)
                                     navController.navigate(item.screen.route) {
                                         popUpTo(navController.graph.findStartDestination().id) {
                                             saveState = true
@@ -357,3 +363,4 @@ private fun OtaPulseBottomBar(
         }
     }
 }
+

@@ -141,3 +141,4 @@ object WhatsNewHelper {
         prefs.edit().putString(KEY_LAST_SHOWN_VERSION, currentVersion).apply()
     }
 }
+

@@ -31,3 +31,4 @@ object DatabaseModule {
         return appDatabase.otaHistoryDao()
     }
 }
+

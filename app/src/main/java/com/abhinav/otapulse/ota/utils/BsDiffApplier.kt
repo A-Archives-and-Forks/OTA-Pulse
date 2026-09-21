@@ -117,3 +117,4 @@ object BsDiffApplier {
         return readBsdiffLong(buf)
     }
 }
+

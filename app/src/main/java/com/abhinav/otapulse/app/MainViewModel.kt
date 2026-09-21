@@ -45,3 +45,4 @@ class MainViewModel @Inject constructor(
         _appUpdateState.value = null
     }
 }
+

@@ -71,3 +71,4 @@ enum class VerificationResult {
     SKIPPED,
     ERROR
 }
+

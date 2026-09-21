@@ -62,3 +62,4 @@ abstract class RepositoryModule {
         }
     }
 }
+

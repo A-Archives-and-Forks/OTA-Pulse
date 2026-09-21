@@ -8,3 +8,4 @@ import javax.inject.Inject
 class GetDevicesUseCase @Inject constructor(private val deviceRepository: DeviceRepository) {
     operator fun invoke(): Flow<List<Device>> = deviceRepository.getDevices()
 }
+

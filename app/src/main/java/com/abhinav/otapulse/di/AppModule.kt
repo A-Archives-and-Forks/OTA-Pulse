@@ -41,3 +41,4 @@ object AppModule {
         return com.abhinav.otapulse.ota.engine.OtaExtractor(context)
     }
 }
+

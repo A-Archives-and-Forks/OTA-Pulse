@@ -137,3 +137,4 @@ object DeviceCatalogParser {
         return if (element.isJsonNull) null else runCatching { element.asBoolean }.getOrNull()
     }
 }
+

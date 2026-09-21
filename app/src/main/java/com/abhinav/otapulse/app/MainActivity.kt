@@ -345,3 +345,4 @@ class MainActivity : AppCompatActivity() {
         return uiMode == Configuration.UI_MODE_NIGHT_YES
     }
 }
+

@@ -50,3 +50,4 @@ data class NetworkComponent(
     val nightUpdateLimit: String? = null,
     val versionTypeH5: String? = null
 ) : Parcelable
+

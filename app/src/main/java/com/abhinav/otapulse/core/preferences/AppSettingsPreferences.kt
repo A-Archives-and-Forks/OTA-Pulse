@@ -102,3 +102,4 @@ class AppSettingsPreferences @Inject constructor(
         prefs.edit().putBoolean(PREF_BROWSER_SHOW_CONTROLS, enabled).apply()
     }
 }
+

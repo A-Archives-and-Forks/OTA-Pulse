@@ -50,3 +50,4 @@ sealed class DownloadState {
     data class Failed(val download: DownloadRecord, val error: DownloadError) : DownloadState()
     data class Cancelled(val download: DownloadRecord) : DownloadState()
 }
+

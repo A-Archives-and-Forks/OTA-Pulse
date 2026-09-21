@@ -55,3 +55,4 @@ class OtaPulseApplication : Application(), Configuration.Provider {
         )
     }
 }
+

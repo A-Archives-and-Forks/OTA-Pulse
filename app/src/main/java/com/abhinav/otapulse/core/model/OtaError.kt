@@ -18,3 +18,4 @@ sealed class OtaError : Exception() {
         override val message: String get() = cause?.message ?: "An unknown error occurred."
     }
 }
+

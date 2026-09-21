@@ -38,3 +38,4 @@ data class HomeUpdateUiState(
     val isStartingExtraction: Boolean = false,
     val userMessage: String? = null
 )
+

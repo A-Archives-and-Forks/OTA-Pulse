@@ -10,3 +10,4 @@ class GetDownloadsUseCase @Inject constructor(private val downloadRepository: Do
         return downloadRepository.allDownloads
     }
 }
+

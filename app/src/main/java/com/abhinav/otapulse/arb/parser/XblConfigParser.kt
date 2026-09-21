@@ -185,3 +185,4 @@ class XblConfigParser {
             .toLong() and 0xFFFFFFFFL
     }
 }
+

@@ -16,3 +16,4 @@ data class Device(
     val isError: Boolean = false,
     val isCustom: Boolean // New property to identify custom devices
 ) : Parcelable
+

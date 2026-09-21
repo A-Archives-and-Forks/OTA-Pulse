@@ -53,7 +53,9 @@ fun OtaPulseNavGraph(
         composable(
             route = Screen.HomeUpdate.route,
             enterTransition = { NavigationAnimations.bottomNavEnterTransition() },
-            exitTransition = { NavigationAnimations.bottomNavExitTransition() }
+            exitTransition = { NavigationAnimations.bottomNavExitTransition() },
+            popEnterTransition = { NavigationAnimations.bottomNavEnterTransition() },
+            popExitTransition = { NavigationAnimations.bottomNavExitTransition() }
         ) {
             com.abhinav.otapulse.feature.updates.ui.HomeUpdateScreen(
                 onNavigateToHistory = { navController.navigate(Screen.History.route) }
@@ -63,7 +65,9 @@ fun OtaPulseNavGraph(
         composable(
             route = Screen.DeviceCatalog.route,
             enterTransition = { NavigationAnimations.bottomNavEnterTransition() },
-            exitTransition = { NavigationAnimations.bottomNavExitTransition() }
+            exitTransition = { NavigationAnimations.bottomNavExitTransition() },
+            popEnterTransition = { NavigationAnimations.bottomNavEnterTransition() },
+            popExitTransition = { NavigationAnimations.bottomNavExitTransition() }
         ) {
             com.abhinav.otapulse.feature.devicecatalog.ui.DeviceCatalogScreen(
                 onNavigateToAddDevice = { device ->
@@ -81,7 +85,9 @@ fun OtaPulseNavGraph(
         composable(
             route = Screen.OtaTools.route,
             enterTransition = { NavigationAnimations.bottomNavEnterTransition() },
-            exitTransition = { NavigationAnimations.bottomNavExitTransition() }
+            exitTransition = { NavigationAnimations.bottomNavExitTransition() },
+            popEnterTransition = { NavigationAnimations.bottomNavEnterTransition() },
+            popExitTransition = { NavigationAnimations.bottomNavExitTransition() }
         ) {
             com.abhinav.otapulse.feature.otatools.ui.OtaToolsScreen(
                 onNavigateToManualQuery = { navController.navigate(Screen.ManualQuery.route) },
@@ -96,7 +102,9 @@ fun OtaPulseNavGraph(
         composable(
             route = Screen.About.route,
             enterTransition = { NavigationAnimations.bottomNavEnterTransition() },
-            exitTransition = { NavigationAnimations.bottomNavExitTransition() }
+            exitTransition = { NavigationAnimations.bottomNavExitTransition() },
+            popEnterTransition = { NavigationAnimations.bottomNavEnterTransition() },
+            popExitTransition = { NavigationAnimations.bottomNavExitTransition() }
         ) {
             com.abhinav.otapulse.feature.about.ui.AboutScreen(
                 onNavigateToAppUpdate = { info ->
@@ -118,7 +126,9 @@ fun OtaPulseNavGraph(
         composable(
             route = Screen.Settings.route,
             enterTransition = { NavigationAnimations.bottomNavEnterTransition() },
-            exitTransition = { NavigationAnimations.bottomNavExitTransition() }
+            exitTransition = { NavigationAnimations.bottomNavExitTransition() },
+            popEnterTransition = { NavigationAnimations.bottomNavEnterTransition() },
+            popExitTransition = { NavigationAnimations.bottomNavExitTransition() }
         ) {
             com.abhinav.otapulse.feature.settings.ui.SettingsScreen(
                 onNavigateToLibraries = { navController.navigate(Screen.Libraries.route) }
@@ -228,3 +238,4 @@ private fun PlaceholderScreen(name: String) {
         )
     }
 }
+

@@ -31,3 +31,4 @@ data class DownloadRecord(
      */
     val extras: Map<String, String>
 )
+

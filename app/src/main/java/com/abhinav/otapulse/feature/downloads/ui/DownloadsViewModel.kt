@@ -66,3 +66,4 @@ class DownloadsViewModel @Inject constructor(
     fun retryDownload(downloadInfo: DownloadInfo) = downloadRepository.retryDownload(downloadInfo)
     fun deleteDownload(downloadInfo: DownloadInfo) = downloadRepository.deleteDownload(downloadInfo)
 }
+

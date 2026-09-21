@@ -18,3 +18,4 @@ interface DownloadRepository {
     suspend fun getResolvedTargetFile(otaUpdate: OtaUpdate, deviceName: String, regionName: String): java.io.File
     fun deleteFile(file: java.io.File): Boolean
 }
+

@@ -76,3 +76,4 @@ class ArbLookupService @Inject constructor(private val arbChecker: ArbChecker) {
 
     suspend fun lookupByUrl(downloadUrl: String): ArbInfo? = lookup(downloadUrl)
 }
+

@@ -57,6 +57,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -109,13 +110,15 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.abhinav.otapulse.R
 import com.abhinav.otapulse.core.common.FormatUtils
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.download.DownloadStatus
 import com.abhinav.otapulse.core.model.DownloadInfo
 import com.abhinav.otapulse.core.model.Md5Status
 import com.abhinav.otapulse.core.ui.components.EmptyState
 import com.abhinav.otapulse.core.ui.components.OtaCard
 import com.abhinav.otapulse.core.ui.components.OtaOutlinedButton
+import com.abhinav.otapulse.core.ui.components.stackItemAppearance
 import com.abhinav.otapulse.core.ui.components.OtaPrimaryButton
 import com.abhinav.otapulse.core.ui.components.OtaTextField
 import com.abhinav.otapulse.core.ui.components.OtaTonalButton
@@ -159,6 +162,7 @@ fun DownloadsContent(
     onRetryDownload: (DownloadInfo) -> Unit = {}
 ) {
     val context = LocalContext.current
+    val view = androidx.compose.ui.platform.LocalView.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     var showAddDialog by remember { mutableStateOf(false) }
@@ -189,7 +193,7 @@ fun DownloadsContent(
             val navBarsBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
             FloatingActionButton(
                 onClick = {
-                    context.performHapticFeedback()
+                    view.haptic(HapticType.CLICK)
                     showAddDialog = true
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -213,7 +217,7 @@ fun DownloadsContent(
                     message = stringResource(R.string.downloads_empty_msg),
                     actionLabel = stringResource(R.string.downloads_add_direct_link),
                     onAction = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         showAddDialog = true
                     },
                     modifier = Modifier.align(Alignment.Center)
@@ -224,10 +228,10 @@ fun DownloadsContent(
                     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 84.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(
+                    itemsIndexed(
                         items = downloads,
-                        key = { it.id }
-                    ) { download ->
+                        key = { _, it -> it.id }
+                    ) { index, download ->
                         val density = LocalDensity.current
                         val swipeWidth = with(density) { 80.dp.toPx() }
 
@@ -253,6 +257,7 @@ fun DownloadsContent(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(IntrinsicSize.Max)
+                                .stackItemAppearance(index)
                                 .animateItem()
                                 .clip(RoundedCornerShape(16.dp))
                         ) {
@@ -264,7 +269,7 @@ fun DownloadsContent(
                                     .width(80.dp)
                                     .background(MaterialTheme.colorScheme.errorContainer)
                                     .clickable {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.HEAVY_CLICK)
                                         onDeleteDownload(download)
                                     },
                                 contentAlignment = Alignment.Center
@@ -312,6 +317,7 @@ private fun DownloadItemCard(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val view = androidx.compose.ui.platform.LocalView.current
 
     val statusIcon = when (download.status) {
         DownloadStatus.DOWNLOADING -> Icons.Rounded.Download
@@ -526,7 +532,7 @@ private fun DownloadItemCard(
                             icon = Icons.Rounded.Pause,
                             compact = true,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 onPause()
                             }
                         )
@@ -536,7 +542,7 @@ private fun DownloadItemCard(
                             icon = Icons.Rounded.Close,
                             compact = true,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 onCancel()
                             }
                         )
@@ -547,7 +553,7 @@ private fun DownloadItemCard(
                             icon = Icons.Rounded.PlayArrow,
                             compact = true,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 onResume()
                             }
                         )
@@ -557,7 +563,7 @@ private fun DownloadItemCard(
                             icon = Icons.Rounded.Close,
                             compact = true,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 onCancel()
                             }
                         )
@@ -568,7 +574,7 @@ private fun DownloadItemCard(
                             icon = Icons.Rounded.Refresh,
                             compact = true,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 onRetry()
                             }
                         )
@@ -579,7 +585,7 @@ private fun DownloadItemCard(
                             icon = Icons.Rounded.FolderOpen,
                             compact = true,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 onOpen()
                             }
                         )
@@ -590,7 +596,7 @@ private fun DownloadItemCard(
                             icon = Icons.Rounded.Refresh,
                             compact = true,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 onRetry()
                             }
                         )
@@ -728,3 +734,4 @@ fun DownloadsScreenPreview() {
         DownloadsContent(downloads = emptyList())
     }
 }
+

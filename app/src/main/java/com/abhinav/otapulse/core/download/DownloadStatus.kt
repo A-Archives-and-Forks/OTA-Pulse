@@ -18,3 +18,4 @@ enum class DownloadStatus {
     /** Unknown / sentinel (should not appear in practice). */
     NONE
 }
+

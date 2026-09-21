@@ -15,3 +15,4 @@ data class RegionVariant(
     val reqMode: String? = "manual",
     val gray: Int = 0
 ) : Parcelable
+

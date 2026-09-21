@@ -64,3 +64,4 @@ class ExtractionStateStore(context: Context) {
     fun hasSavedState(partitionName: String): Boolean =
         File(dir, "$partitionName.json").exists()
 }
+

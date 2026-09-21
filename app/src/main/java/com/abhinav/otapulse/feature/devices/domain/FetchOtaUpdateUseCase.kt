@@ -12,3 +12,4 @@ class FetchOtaUpdateUseCase @Inject constructor(
         return repository.fetchOtaUpdate(request)
     }
 }
+

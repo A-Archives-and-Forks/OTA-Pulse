@@ -15,3 +15,4 @@ annotation class FavoritesPrefs
 @Qualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class CustomDevicesPrefs
+

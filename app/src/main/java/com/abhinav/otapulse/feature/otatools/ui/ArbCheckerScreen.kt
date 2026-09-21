@@ -62,6 +62,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -69,7 +70,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.abhinav.otapulse.R
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.ui.components.OtaCard
 import com.abhinav.otapulse.core.ui.components.OtaOutlinedButton
 import com.abhinav.otapulse.core.ui.components.OtaPrimaryButton
@@ -87,6 +89,7 @@ fun ArbCheckerScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val context = LocalContext.current
+    val view = LocalView.current
 
     var inputUrl by remember { mutableStateOf("") }
     var selectedLocalUri by remember { mutableStateOf<Uri?>(null) }
@@ -119,7 +122,7 @@ fun ArbCheckerScreen(
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         onNavigateBack()
                     }) {
                         Icon(
@@ -247,7 +250,7 @@ fun ArbCheckerScreen(
                                         if (inputUrl.isNotEmpty()) {
                                             IconButton(
                                                 onClick = {
-                                                    context.performHapticFeedback()
+                                                    view.haptic(HapticType.CLICK)
                                                     inputUrl = ""
                                                 },
                                                 modifier = Modifier.size(32.dp)
@@ -262,7 +265,7 @@ fun ArbCheckerScreen(
                                         } else {
                                             IconButton(
                                                 onClick = {
-                                                    context.performHapticFeedback()
+                                                    view.haptic(HapticType.CLICK)
                                                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                                     val clipData = clipboard.primaryClip
                                                     if (clipData != null && clipData.itemCount > 0) {
@@ -293,7 +296,7 @@ fun ArbCheckerScreen(
                             icon = if (isUrlChecking) null else Icons.Rounded.Search,
                             isLoading = isUrlChecking,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 val trimmed = inputUrl.trim()
                                 if (trimmed.isBlank()) {
                                     Toast.makeText(context, context.getString(R.string.toast_paste_ota_url_first), Toast.LENGTH_SHORT).show()
@@ -351,7 +354,7 @@ fun ArbCheckerScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         pickLocalZipLauncher.launch(arrayOf("application/zip", "application/octet-stream"))
                                     }
                             ) {
@@ -388,7 +391,7 @@ fun ArbCheckerScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         pickLocalZipLauncher.launch(arrayOf("application/zip", "application/octet-stream"))
                                     }
                             ) {
@@ -412,7 +415,7 @@ fun ArbCheckerScreen(
                                     }
                                     IconButton(
                                         onClick = {
-                                            context.performHapticFeedback()
+                                            view.haptic(HapticType.CLICK)
                                             selectedLocalUri = null
                                             selectedLocalName = ""
                                         }
@@ -433,7 +436,7 @@ fun ArbCheckerScreen(
                             icon = if (isLocalChecking) null else Icons.Rounded.Search,
                             isLoading = isLocalChecking,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 val uri = selectedLocalUri
                                 if (uri == null) {
                                     Toast.makeText(context, context.getString(R.string.toast_choose_local_zip_first), Toast.LENGTH_SHORT).show()
@@ -547,7 +550,7 @@ fun ArbCheckerScreen(
                             OtaOutlinedButton(
                                 text = "Clear Result",
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.CLICK)
                                     viewModel.clearArbCheckResult()
                                 },
                                 modifier = Modifier.fillMaxWidth()
@@ -591,3 +594,4 @@ private fun resolveDisplayName(context: android.content.Context, uri: Uri): Stri
     }
     return name
 }
+

@@ -19,3 +19,4 @@ interface DownloadListener {
     fun onRemoved(record: DownloadRecord) {}
     fun onDeleted(record: DownloadRecord) {}
 }
+

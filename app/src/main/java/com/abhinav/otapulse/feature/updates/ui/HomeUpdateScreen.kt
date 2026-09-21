@@ -159,8 +159,9 @@ fun HomeUpdateContent(
     val focusManager = LocalFocusManager.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var showManualFields by remember { mutableStateOf(false) }
-
-    var showSections by remember { mutableStateOf(true) }
+    
+    var showSections by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { showSections = true }
 
     val infiniteTransition = rememberInfiniteTransition(label = "live_pulse")
     val dotAlpha by infiniteTransition.animateFloat(
@@ -505,6 +506,8 @@ fun HomeUpdateContent(
 
             val results = uiState.multiResults
             if (!results.isNullOrEmpty()) {
+                var showResults by remember(results) { mutableStateOf(false) }
+                LaunchedEffect(results) { showResults = true }
                 Text(
                     text = "${stringResource(R.string.update_available_label)} (${results.size})",
                     style = MaterialTheme.typography.titleMedium,
@@ -513,7 +516,7 @@ fun HomeUpdateContent(
                 )
 
                 results.forEachIndexed { index, ota ->
-                    StaggeredItem(visible = true, index = index) {
+                    StaggeredItem(visible = showResults, index = index) {
                         OtaCard(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { onSelectOta(ota) }
@@ -691,3 +694,4 @@ fun HomeUpdateScreenPreview() {
         HomeUpdateContent(uiState = HomeUpdateUiState())
     }
 }
+

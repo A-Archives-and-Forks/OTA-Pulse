@@ -19,3 +19,4 @@ interface DeviceRepository {
     suspend fun syncCatalog()
     val isSyncing: StateFlow<Boolean>
 }
+

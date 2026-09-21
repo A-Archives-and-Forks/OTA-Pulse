@@ -51,13 +51,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.abhinav.otapulse.R
 import com.abhinav.otapulse.core.common.openInAppBrowser
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.ui.components.OtaCard
 import com.abhinav.otapulse.core.ui.components.OtaTopAppBar
 
@@ -71,6 +73,7 @@ fun LibrariesScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val context = LocalContext.current
+    val view = LocalView.current
 
     val libraries = remember {
         listOf(
@@ -116,7 +119,7 @@ fun LibrariesScreen(
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         onNavigateBack()
                     }) {
                         Icon(
@@ -152,7 +155,7 @@ fun LibrariesScreen(
                 LibraryCard(
                     library = library,
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         try {
                             context.openInAppBrowser(library.url, library.name)
                         } catch (e: Exception) {
@@ -236,3 +239,4 @@ private fun LibraryCard(
         }
     }
 }
+

@@ -73,3 +73,4 @@ class BootCompletedReceiver : BroadcastReceiver() {
         )
     }
 }
+

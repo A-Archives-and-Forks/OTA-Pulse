@@ -14,3 +14,4 @@ data class CustomOtaRequest(
     var reqMode: String = "manual",
     var gray: Int = 0
 ) : Serializable
+

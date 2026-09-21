@@ -80,6 +80,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -95,7 +96,8 @@ import com.abhinav.otapulse.catalog.model.RegionData
 import com.abhinav.otapulse.core.common.DeviceUtils
 import com.abhinav.otapulse.core.common.FormatUtils
 import com.abhinav.otapulse.core.common.OtaShareHelper
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.ui.components.EmptyState
 import com.abhinav.otapulse.core.ui.components.ErrorState
 import com.abhinav.otapulse.core.ui.components.LoadingState
@@ -122,6 +124,7 @@ fun ManualQueryScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val context = LocalContext.current
+    val view = LocalView.current
 
     // Form inputs
     var productModel by remember { mutableStateOf("RMX3840") }
@@ -346,7 +349,7 @@ fun ManualQueryScreen(
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         onNavigateBack()
                     }) {
                         Icon(
@@ -357,7 +360,7 @@ fun ManualQueryScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         showInfoDialog = true
                     }) {
                         Icon(
@@ -500,7 +503,7 @@ fun ManualQueryScreen(
                                     text = opt,
                                     selected = region == opt,
                                     onClick = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         region = opt
                                         val found = RegionData.regions.find { it.displayName == opt }
                                         if (found != null && serverOptions.contains(found.serverCode)) {
@@ -524,7 +527,7 @@ fun ManualQueryScreen(
                                     text = opt,
                                     selected = versionLetter == opt,
                                     onClick = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         versionLetter = opt
                                     }
                                 )
@@ -544,7 +547,7 @@ fun ManualQueryScreen(
                                     text = opt,
                                     selected = server == opt,
                                     onClick = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         server = opt
                                     }
                                 )
@@ -564,7 +567,7 @@ fun ManualQueryScreen(
                                     text = opt,
                                     selected = reqMode == opt,
                                     onClick = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         reqMode = opt
                                     }
                                 )
@@ -584,7 +587,7 @@ fun ManualQueryScreen(
                                     text = if (opt == "0") "Standard (0)" else "Gray Channel ($opt)",
                                     selected = gray == opt,
                                     onClick = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         gray = opt
                                     }
                                 )
@@ -609,7 +612,7 @@ fun ManualQueryScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.CLICK)
                                     showAdvanced = !showAdvanced
                                 },
                             verticalAlignment = Alignment.CenterVertically,
@@ -703,7 +706,7 @@ fun ManualQueryScreen(
                                         OtaSwitch(
                                             checked = beta,
                                             onCheckedChange = {
-                                                context.performHapticFeedback()
+                                                view.haptic(HapticType.CLICK)
                                                 beta = it
                                             }
                                         )
@@ -720,7 +723,7 @@ fun ManualQueryScreen(
                                             text = opt,
                                             selected = language == opt,
                                             onClick = {
-                                                context.performHapticFeedback()
+                                                view.haptic(HapticType.CLICK)
                                                 language = opt
                                             }
                                         )
@@ -748,7 +751,7 @@ fun ManualQueryScreen(
                             text = "Auto-Fill",
                             icon = Icons.Rounded.AutoFixHigh,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 val model = DeviceUtils.getSystemProperty("ro.product.model")
                                 val name = DeviceUtils.getSystemProperty("ro.product.name")
                                 val nvIdProp = DeviceUtils.getSystemProperty("ro.build.oplus_nv_id")
@@ -785,7 +788,7 @@ fun ManualQueryScreen(
                             text = "Query Now",
                             icon = Icons.Rounded.Search,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 if (productModel.isBlank()) {
                                     Toast.makeText(context, context.getString(R.string.manual_err_no_model), Toast.LENGTH_SHORT).show()
                                     return@OtaPrimaryButton
@@ -821,7 +824,7 @@ fun ManualQueryScreen(
                             text = "Multi-Server",
                             icon = Icons.Rounded.Public,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 viewModel.sendRequestAcrossServers(
                                     model = productModel,
                                     otaVersion = versionLetter,
@@ -847,7 +850,7 @@ fun ManualQueryScreen(
                             text = "Full Scan",
                             icon = Icons.Rounded.Speed,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 viewModel.sendRequestAcrossVersionsAndServers(
                                     model = productModel,
                                     displayDeviceName = productName.ifBlank { productModel },
@@ -940,6 +943,7 @@ private fun QueryOtaResultCard(
     viewModel: OtaToolsViewModel
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
     val clipboardManager = LocalClipboardManager.current
     val uiState by viewModel.uiState.collectAsState()
 
@@ -951,7 +955,7 @@ private fun QueryOtaResultCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         onClick = {
-            context.performHapticFeedback()
+            view.haptic(HapticType.CLICK)
             viewModel.showOtaDetails(ota)
         }
     ) {
@@ -1073,7 +1077,7 @@ private fun QueryOtaResultCard(
             // Download URL Code Box (Tap to Copy)
             Surface(
                 onClick = {
-                    context.performHapticFeedback()
+                    view.haptic(HapticType.CLICK)
                     clipboardManager.setText(AnnotatedString(ota.downloadUrl))
                     Toast.makeText(context, context.getString(R.string.manual_url_copied_toast), Toast.LENGTH_SHORT).show()
                 },
@@ -1228,3 +1232,4 @@ private fun InfoDetailRow(title: String, desc: String) {
         )
     }
 }
+

@@ -118,3 +118,4 @@ object FormatUtils {
         return "${DecimalFormat(pattern).format(value)} $unit"
     }
 }
+

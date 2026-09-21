@@ -6,3 +6,4 @@ data class OtaHistoryEntry(
     val region: String,
     val otaUpdate: OtaUpdate
 )
+

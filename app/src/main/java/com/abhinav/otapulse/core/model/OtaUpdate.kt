@@ -68,3 +68,4 @@ data class OtaUpdate(
  * directly.
  */
 fun Map<String, String>.toExtras(): Map<String, String> = this
+

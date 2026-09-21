@@ -67,6 +67,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -74,7 +75,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.FileProvider
 import com.abhinav.otapulse.core.common.openExternalBrowser
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.network.AppUpdateDownloader
 import com.abhinav.otapulse.core.network.GitHubUpdater
 import com.abhinav.otapulse.core.ui.components.OtaCard
@@ -99,6 +101,7 @@ fun AppUpdateScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val context = LocalContext.current
+    val view = LocalView.current
     val scope = rememberCoroutineScope()
     val okHttpClient = remember { OkHttpClient() }
 
@@ -142,7 +145,7 @@ fun AppUpdateScreen(
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         onNavigateBack()
                     }) {
                         Icon(
@@ -217,7 +220,7 @@ fun AppUpdateScreen(
                         icon = Icons.Rounded.SystemUpdate,
                         enabled = !isChecking,
                         onClick = {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             isChecking = true
                             GitHubUpdater.checkForUpdate(currentVersion, okHttpClient) { info ->
                                 isChecking = false
@@ -362,7 +365,7 @@ fun AppUpdateScreen(
                                         text = "Install APK Now",
                                         icon = Icons.Rounded.InstallMobile,
                                         onClick = {
-                                            context.performHapticFeedback()
+                                            view.haptic(HapticType.CLICK)
                                             installApk(context, downloadedFile!!)
                                         },
                                         modifier = Modifier.fillMaxWidth()
@@ -376,7 +379,7 @@ fun AppUpdateScreen(
                                     OtaOutlinedButton(
                                         text = "Download via Browser",
                                         onClick = {
-                                            context.performHapticFeedback()
+                                            view.haptic(HapticType.CLICK)
                                             try {
                                                 context.openExternalBrowser(url)
                                             } catch (e: Exception) {
@@ -401,7 +404,7 @@ fun AppUpdateScreen(
                             OtaOutlinedButton(
                                 text = "Later",
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.CLICK)
                                     onNavigateBack()
                                 },
                                 modifier = Modifier.weight(1f)
@@ -411,7 +414,7 @@ fun AppUpdateScreen(
                                 text = "Update Now",
                                 icon = Icons.Rounded.Download,
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.CLICK)
                                     isDownloading = true
                                     downloadError = null
                                     val fileName = "otapulse_update_$version.apk"
@@ -463,3 +466,4 @@ private fun installApk(context: Context, apkFile: File) {
         Toast.makeText(context, context.getString(R.string.app_update_err_install), Toast.LENGTH_SHORT).show()
     }
 }
+

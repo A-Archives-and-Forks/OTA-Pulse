@@ -48,3 +48,4 @@ class DownloadWorker @AssistedInject constructor(
         const val KEY_REGION_NAME = "key_region_name"
     }
 }
+

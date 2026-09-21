@@ -41,3 +41,4 @@ class OtaRepositoryImpl @Inject constructor(
                 .map { components -> components.map { it.toDomain() } }
         }
 }
+

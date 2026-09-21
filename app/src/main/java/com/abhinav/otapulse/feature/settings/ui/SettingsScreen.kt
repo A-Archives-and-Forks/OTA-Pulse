@@ -83,13 +83,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.abhinav.otapulse.R
 import com.abhinav.otapulse.core.common.LocaleHelper
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
+import com.abhinav.otapulse.core.ui.components.StaggeredItem
+import androidx.compose.runtime.LaunchedEffect
 import com.abhinav.otapulse.core.preferences.AppSettings
 import com.abhinav.otapulse.core.preferences.ThemeSettings
 import com.abhinav.otapulse.core.ui.components.OtaCard
@@ -115,6 +119,7 @@ fun SettingsScreen(
     val themeSettings by viewModel.themeSettings.collectAsState()
     val appSettings by viewModel.appSettings.collectAsState()
     val context = LocalContext.current
+    val view = LocalView.current
     val pm = remember { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
     val isIgnoringBattery = remember { pm.isIgnoringBatteryOptimizations(context.packageName) }
     
@@ -173,6 +178,7 @@ fun SettingsContent(
     webViewVersion: String = ""
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
 
     var showLanguageDialog by remember { mutableStateOf(false) }
     var showIntervalDialog by remember { mutableStateOf(false) }
@@ -189,6 +195,8 @@ fun SettingsContent(
     }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var showSections by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { showSections = true }
 
     Scaffold(
         topBar = {
@@ -211,49 +219,59 @@ fun SettingsContent(
                 .padding(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            AppearanceSection(
-                themeSettings = themeSettings,
-                onThemeModeChanged = onSetThemeMode,
-                onNightModeChanged = onSetNightMode,
-                onAmoledChanged = onSetAmoledDark,
-                onDynamicColorChanged = onSetDynamicColor,
-                onSeedColorChanged = onSetSeedColor,
-                onPaletteStyleChanged = onSetPaletteStyle
-            )
+            StaggeredItem(visible = showSections, index = 0) {
+                AppearanceSection(
+                    themeSettings = themeSettings,
+                    onThemeModeChanged = onSetThemeMode,
+                    onNightModeChanged = onSetNightMode,
+                    onAmoledChanged = onSetAmoledDark,
+                    onDynamicColorChanged = onSetDynamicColor,
+                    onSeedColorChanged = onSetSeedColor,
+                    onPaletteStyleChanged = onSetPaletteStyle
+                )
+            }
 
-            GeneralSection(
-                appSettings = appSettings,
-                isIgnoringBattery = isIgnoringBattery,
-                onLanguageClick = { showLanguageDialog = true },
-                onAdvancedModeChanged = onSetAdvancedMode,
-                onAutoUpdateChanged = onSetAutoUpdateCheck,
-                onAutoSoftwareUpdateChanged = onSetAutoSoftwareUpdateCheck,
-                onIntervalClick = { showIntervalDialog = true },
-                onArbDetectionChanged = onSetArbDetection
-            )
+            StaggeredItem(visible = showSections, index = 1) {
+                GeneralSection(
+                    appSettings = appSettings,
+                    isIgnoringBattery = isIgnoringBattery,
+                    onLanguageClick = { showLanguageDialog = true },
+                    onAdvancedModeChanged = onSetAdvancedMode,
+                    onAutoUpdateChanged = onSetAutoUpdateCheck,
+                    onAutoSoftwareUpdateChanged = onSetAutoSoftwareUpdateCheck,
+                    onIntervalClick = { showIntervalDialog = true },
+                    onArbDetectionChanged = onSetArbDetection
+                )
+            }
 
-            BrowserSection(
-                appSettings = appSettings,
-                webViewVersion = webViewVersion,
-                onDesktopModeChanged = onSetBrowserDesktopMode,
-                onShowControlsChanged = onSetBrowserShowControls
-            )
+            StaggeredItem(visible = showSections, index = 2) {
+                BrowserSection(
+                    appSettings = appSettings,
+                    webViewVersion = webViewVersion,
+                    onDesktopModeChanged = onSetBrowserDesktopMode,
+                    onShowControlsChanged = onSetBrowserShowControls
+                )
+            }
 
-            DataSection(
-                onExportClick = {
-                    val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
-                    val dateString = dateFormat.format(Date())
-                    exportLauncher.launch("otapulse_backup_$dateString.json")
-                },
-                onImportClick = {
-                    importLauncher.launch(arrayOf("application/json"))
-                }
-            )
+            StaggeredItem(visible = showSections, index = 3) {
+                DataSection(
+                    onExportClick = {
+                        val dateFormat = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+                        val dateString = dateFormat.format(Date())
+                        exportLauncher.launch("otapulse_backup_$dateString.json")
+                    },
+                    onImportClick = {
+                        importLauncher.launch(arrayOf("application/json"))
+                    }
+                )
+            }
 
-            AboutSection(
-                onLibrariesClick = onNavigateToLibraries,
-                onDeveloperClick = { showDeveloperDialog = true }
-            )
+            StaggeredItem(visible = showSections, index = 4) {
+                AboutSection(
+                    onLibrariesClick = onNavigateToLibraries,
+                    onDeveloperClick = { showDeveloperDialog = true }
+                )
+            }
 
             Spacer(modifier = Modifier.height(84.dp))
         }
@@ -311,6 +329,7 @@ private fun AppearanceSection(
         (themeSettings.nightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM && androidx.compose.foundation.isSystemInDarkTheme())
 
     val context = LocalContext.current
+    val view = LocalView.current
 
     OtaCard(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Column(modifier = Modifier.padding(18.dp)) {
@@ -472,7 +491,7 @@ private fun AppearanceSection(
                                 .size(32.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 .clickable {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.TICK)
                                     onSeedColorChanged(colorHex)
                                 },
                             border = if (themeSettings.seedColor == colorHex) 
@@ -739,10 +758,16 @@ private fun EnhancedToggleRow(
     onCheckedChange: (Boolean) -> Unit,
     enabled: Boolean = true
 ) {
+    val context = LocalContext.current
+    val view = LocalView.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(enabled = enabled) { onCheckedChange(!checked) }
+            .clickable(enabled = enabled) {
+                val newValue = !checked
+                view.haptic(if (newValue) HapticType.TOGGLE_ON else HapticType.TOGGLE_OFF)
+                onCheckedChange(newValue)
+            }
             .padding(horizontal = 14.dp, vertical = 12.dp)
             .alpha(if (enabled) 1f else 0.45f),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -783,7 +808,10 @@ private fun EnhancedToggleRow(
         }
         OtaSwitch(
             checked = checked,
-            onCheckedChange = { onCheckedChange(it) },
+            onCheckedChange = {
+                view.haptic(if (it) HapticType.TOGGLE_ON else HapticType.TOGGLE_OFF)
+                onCheckedChange(it)
+            },
             enabled = enabled
         )
     }
@@ -801,6 +829,7 @@ private fun GeneralSection(
     onArbDetectionChanged: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
     val currentLocaleTag = LocaleHelper.getSelectedLocale(context)
     val langName = LocaleHelper.getDisplayName(context, currentLocaleTag)
 
@@ -999,11 +1028,15 @@ private fun SettingsToggleRow(
     onCheckedChange: (Boolean) -> Unit,
     enabled: Boolean = true
 ) {
+    val context = LocalContext.current
+    val view = LocalView.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(enabled = enabled) {
-                onCheckedChange(!checked)
+                val newValue = !checked
+                view.haptic(if (newValue) HapticType.TOGGLE_ON else HapticType.TOGGLE_OFF)
+                onCheckedChange(newValue)
             }
             .padding(vertical = 12.dp)
             .alpha(if (enabled) 1f else 0.5f),
@@ -1023,7 +1056,10 @@ private fun SettingsToggleRow(
         }
         OtaSwitch(
             checked = checked,
-            onCheckedChange = { onCheckedChange(it) },
+            onCheckedChange = {
+                view.haptic(if (it) HapticType.TOGGLE_ON else HapticType.TOGGLE_OFF)
+                onCheckedChange(it)
+            },
             enabled = enabled
         )
     }
@@ -1076,3 +1112,6 @@ fun SettingsScreenPreview() {
         )
     }
 }
+
+
+

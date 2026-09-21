@@ -121,3 +121,4 @@ class ThemePreferences @Inject constructor(
         prefs.edit().putString(PREF_PALETTE_STYLE, style.name).apply()
     }
 }
+

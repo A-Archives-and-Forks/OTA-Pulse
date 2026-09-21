@@ -35,9 +35,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import com.abhinav.otapulse.core.ui.theme.OtaPulseMotion
 import com.abhinav.otapulse.core.ui.theme.OtaPulseTheme
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
+import androidx.compose.ui.platform.LocalView
+
+import com.abhinav.otapulse.core.ui.theme.LocalReduceMotion
 
 /**
  * A theme-aware card component for OTA Pulse.
@@ -53,15 +59,27 @@ fun OtaCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val isHolo = OtaPulseTheme.holographicConfig.isEnabled
+    val view = LocalView.current
+    val reduceMotion = LocalReduceMotion.current
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val shouldAnimatePress = !reduceMotion && isPressed && (onClick != null)
     val scale by animateFloatAsState(
-        targetValue = if (isPressed && (onClick != null)) 0.97f else 1f,
+        targetValue = if (shouldAnimatePress) 0.96f else 1f,
         animationSpec = OtaPulseMotion.SpringStiff,
         label = "card_scale"
     )
+    val pressElevation by animateFloatAsState(
+        targetValue = if (shouldAnimatePress) 2f else 0f,
+        animationSpec = OtaPulseMotion.SpringStiff,
+        label = "card_elevation"
+    )
 
-    val animatedModifier = modifier.scale(scale)
+    val animatedModifier = modifier.graphicsLayer {
+        scaleX = scale
+        scaleY = scale
+        shadowElevation = pressElevation * density
+    }
 
     if (isHolo) {
         val clickableMod = if (onClick != null) {
@@ -125,3 +143,4 @@ fun OtaCard(
         }
     }
 }
+

@@ -11,3 +11,4 @@ import com.abhinav.otapulse.feature.history.data.local.OtaHistoryEntity
 abstract class AppDatabase : RoomDatabase() {
     abstract fun otaHistoryDao(): OtaHistoryDao
 }
+

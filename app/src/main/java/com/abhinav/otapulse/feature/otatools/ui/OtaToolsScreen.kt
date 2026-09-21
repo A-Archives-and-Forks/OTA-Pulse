@@ -31,6 +31,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,12 +45,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.abhinav.otapulse.R
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
+import com.abhinav.otapulse.core.ui.components.StaggeredItem
 import com.abhinav.otapulse.core.ui.components.OtaCard
 import com.abhinav.otapulse.core.ui.components.OtaTopAppBar
 import com.abhinav.otapulse.core.ui.theme.OtaPulseTheme
@@ -63,6 +71,9 @@ fun OtaToolsScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val context = LocalContext.current
+    val view = LocalView.current
+    var showSections by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { showSections = true }
 
     Scaffold(
         modifier = modifier
@@ -85,15 +96,16 @@ fun OtaToolsScreen(
         ) {
             // Hero Header Card
             item {
-                OtaCard(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
+                StaggeredItem(visible = showSections, index = 0) {
+                    OtaCard(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(
                                         MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
                                         Color.Transparent
                                     )
@@ -149,11 +161,13 @@ fun OtaToolsScreen(
                         }
                     }
                 }
+                }
             }
 
             // Tools Section Label
             item {
-                Text(
+                StaggeredItem(visible = showSections, index = 1) {
+                    Text(
                     text = stringResource(R.string.tools_section_label),
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontWeight = FontWeight.Bold
@@ -161,90 +175,103 @@ fun OtaToolsScreen(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(start = 4.dp, top = 8.dp)
                 )
+                }
             }
 
             // Tool 1: Manual Query
             item {
-                ToolCard(
+                StaggeredItem(visible = showSections, index = 2) {
+                    ToolCard(
                     title = stringResource(R.string.tools_manual_query_title),
                     description = stringResource(R.string.tools_manual_query_desc),
                     icon = Icons.Rounded.Terminal,
                     accentColor = MaterialTheme.colorScheme.primary,
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.TICK)
                         onNavigateToManualQuery()
                     }
                 )
+                }
             }
 
             // Tool 2: Partition Extraction
             item {
-                ToolCard(
+                StaggeredItem(visible = showSections, index = 3) {
+                    ToolCard(
                     title = stringResource(R.string.tools_partition_extraction_title),
                     description = stringResource(R.string.tools_partition_extraction_desc),
                     icon = ImageVector.vectorResource(id = R.drawable.ic_extract_stroke),
                     accentColor = MaterialTheme.colorScheme.secondary,
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.TICK)
                         onNavigateToExtraction()
                     }
                 )
+                }
             }
 
             // Tool 3: Link Resolver
             item {
-                ToolCard(
+                StaggeredItem(visible = showSections, index = 4) {
+                    ToolCard(
                     title = stringResource(R.string.tools_link_resolver_title),
                     description = stringResource(R.string.tools_link_resolver_desc),
                     icon = ImageVector.vectorResource(id = R.drawable.ic_open_external_stroke),
                     accentColor = MaterialTheme.colorScheme.tertiary,
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.TICK)
                         onNavigateToLinkResolver()
                     }
                 )
+                }
             }
 
             // Tool 4: ARB Checker
             item {
-                ToolCard(
+                StaggeredItem(visible = showSections, index = 5) {
+                    ToolCard(
                     title = stringResource(R.string.tools_arb_checker_title),
                     description = stringResource(R.string.tools_arb_checker_desc),
                     icon = Icons.Rounded.Security,
                     accentColor = MaterialTheme.colorScheme.primary,
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.TICK)
                         onNavigateToArbChecker()
                     }
                 )
+                }
             }
 
             // Tool 5: Active Downloads
             item {
-                ToolCard(
+                StaggeredItem(visible = showSections, index = 6) {
+                    ToolCard(
                     title = stringResource(R.string.tools_active_downloads_title),
                     description = stringResource(R.string.tools_active_downloads_desc),
                     icon = Icons.Rounded.Download,
                     accentColor = MaterialTheme.colorScheme.secondary,
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.TICK)
                         onNavigateToDownloads()
                     }
                 )
+                }
             }
 
             // Tool 6: Update History
             item {
-                ToolCard(
+                StaggeredItem(visible = showSections, index = 7) {
+                    ToolCard(
                     title = stringResource(R.string.tools_update_history_title),
                     description = stringResource(R.string.tools_update_history_desc),
                     icon = Icons.Rounded.History,
                     accentColor = MaterialTheme.colorScheme.tertiary,
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.TICK)
                         onNavigateToHistory()
                     }
                 )
+                }
             }
             
             item {
@@ -310,3 +337,5 @@ private fun ToolCard(
         }
     }
 }
+
+

@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -81,6 +82,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -91,7 +93,8 @@ import com.abhinav.otapulse.R
 import com.abhinav.otapulse.core.common.FormatUtils
 import com.abhinav.otapulse.core.common.OtaCardData
 import com.abhinav.otapulse.core.common.OtaShareHelper
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.model.Device
 import com.abhinav.otapulse.core.model.OtaUpdate
 import com.abhinav.otapulse.core.model.RegionVariant
@@ -100,8 +103,10 @@ import com.abhinav.otapulse.core.ui.components.EmptyState
 import com.abhinav.otapulse.core.ui.components.ErrorState
 import com.abhinav.otapulse.core.ui.components.FloatingSearchBar
 import com.abhinav.otapulse.core.ui.components.LoadingState
+import com.abhinav.otapulse.core.ui.components.SkeletonGrid
 import com.abhinav.otapulse.core.ui.components.OtaCard
 import com.abhinav.otapulse.core.ui.components.OtaOutlinedButton
+import com.abhinav.otapulse.core.ui.components.stackItemAppearance
 import com.abhinav.otapulse.core.ui.components.OtaPrimaryButton
 import com.abhinav.otapulse.core.ui.components.OtaTopAppBar
 import com.abhinav.otapulse.core.ui.theme.OtaPulseMotion
@@ -121,11 +126,15 @@ fun DeviceCatalogScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val view = LocalView.current
     val focusManager = LocalFocusManager.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var showSearchInput by rememberSaveable { mutableStateOf(false) }
     val searchFocusRequester = remember { FocusRequester() }
     val listState = rememberLazyListState()
+    val sessionKey = remember(uiState.selectedBrand, uiState.searchQuery) {
+        "${uiState.selectedBrand}_${uiState.searchQuery}"
+    }
 
     LaunchedEffect(showSearchInput) {
         if (showSearchInput) {
@@ -152,7 +161,7 @@ fun DeviceCatalogScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.TICK)
                             onNavigateToHistory()
                         }
                     ) {
@@ -182,7 +191,7 @@ fun DeviceCatalogScreen(
                                 FilterChip(
                                     selected = isSelected,
                                     onClick = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.TICK)
                                         viewModel.onBrandSelected(brand)
                                     },
                                     label = {
@@ -223,7 +232,7 @@ fun DeviceCatalogScreen(
                                     onQueryChange = { viewModel.onSearchQueryChanged(it) },
                                     placeholder = stringResource(R.string.search_device_hint),
                                     onClear = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.TICK)
                                         focusManager.clearFocus()
                                     },
                                     focusRequester = searchFocusRequester
@@ -243,7 +252,7 @@ fun DeviceCatalogScreen(
             ) {
                 FloatingActionButton(
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.TICK)
                         showSearchInput = !showSearchInput
                         if (!showSearchInput) {
                             viewModel.onSearchQueryChanged("")
@@ -265,7 +274,7 @@ fun DeviceCatalogScreen(
 
                 FloatingActionButton(
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         onNavigateToAddDevice(null)
                     },
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -289,17 +298,21 @@ fun DeviceCatalogScreen(
             PullToRefreshBox(
                 isRefreshing = uiState.isSyncingCatalog,
                 onRefresh = {
-                    context.performHapticFeedback()
+                    view.haptic(HapticType.TICK)
                     viewModel.forceSyncCatalog()
                 },
                 modifier = Modifier.fillMaxSize()
             ) {
                 when {
                     uiState.isLoading && uiState.devices.isEmpty() -> {
-                        LoadingState(
-                            message = stringResource(R.string.catalog_syncing_msg),
-                            modifier = Modifier.align(Alignment.Center)
-                        )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            SkeletonGrid(count = 6, columns = 1)
+                        }
                     }
                     uiState.errorMessage != null && uiState.devices.isEmpty() -> {
                         ErrorState(
@@ -328,14 +341,15 @@ fun DeviceCatalogScreen(
                             ),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            items(
+                            itemsIndexed(
                                 items = uiState.devices,
-                                key = { it.name }
-                            ) { device ->
+                                key = { _, it -> it.name }
+                            ) { index, device ->
                                 DeviceItemCard(
                                     device = device,
                                     uiState = uiState,
                                     viewModel = viewModel,
+                                    modifier = Modifier.stackItemAppearance(index, sessionKey),
                                     onNavigateToEditDevice = { onNavigateToAddDevice(it) },
                                     onDeleteCustomDevice = { viewModel.deleteCustomDevice(it.name) }
                                 )
@@ -429,7 +443,7 @@ fun DeviceCatalogScreen(
             confirmButton = {
                 ApplyDialogBlurEffect()
                 TextButton(onClick = {
-                    context.performHapticFeedback()
+                    view.haptic(HapticType.HEAVY_CLICK)
                     viewModel.confirmOverwriteDownload()
                 }) {
                     Text(stringResource(R.string.catalog_overwrite_label), color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
@@ -437,7 +451,7 @@ fun DeviceCatalogScreen(
             },
             dismissButton = {
                 TextButton(onClick = {
-                    context.performHapticFeedback()
+                    view.haptic(HapticType.CLICK)
                     viewModel.cancelPendingDownload()
                 }) {
                     Text(stringResource(R.string.action_cancel))
@@ -455,10 +469,12 @@ private fun DeviceItemCard(
     device: Device,
     uiState: DevicesUiState,
     viewModel: DevicesViewModel,
+    modifier: Modifier = Modifier,
     onNavigateToEditDevice: (Device) -> Unit,
     onDeleteCustomDevice: (Device) -> Unit
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
     var isExpanded by rememberSaveable(device.name) { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
@@ -496,13 +512,13 @@ private fun DeviceItemCard(
     }
 
     OtaCard(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
             .animateContentSize(OtaPulseMotion.SpringMediumSize),
         shape = RoundedCornerShape(20.dp),
         onClick = {
-            context.performHapticFeedback()
+            view.haptic(HapticType.TICK)
             isExpanded = !isExpanded
         }
     ) {
@@ -540,7 +556,7 @@ private fun DeviceItemCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(
                         onClick = {
-                            context.performHapticFeedback()
+                            view.haptic(if (device.isFavorite) HapticType.TOGGLE_OFF else HapticType.TOGGLE_ON)
                             viewModel.toggleFavorite(device.name)
                         },
                         modifier = Modifier.size(32.dp)
@@ -557,7 +573,7 @@ private fun DeviceItemCard(
                         Box {
                             IconButton(
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.TICK)
                                     showMenu = true
                                 },
                                 modifier = Modifier.size(32.dp)
@@ -624,7 +640,7 @@ private fun DeviceItemCard(
                                     val isSelected = version == selectedVersion
                                     Surface(
                                         onClick = {
-                                            context.performHapticFeedback()
+                                            view.haptic(HapticType.TICK)
                                             selectedVersion = version
                                             selectedVariant = null
                                         },
@@ -663,7 +679,7 @@ private fun DeviceItemCard(
                                     val isSelected = variant == selectedVariant
                                     Surface(
                                         onClick = {
-                                            context.performHapticFeedback()
+                                            view.haptic(HapticType.TICK)
                                             selectedVariant = variant
                                             viewModel.fetchOtaDetails(device, variant)
                                         },
@@ -728,7 +744,7 @@ private fun DeviceItemCard(
                                 OtaOutlinedButton(
                                     text = "Retry",
                                     onClick = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         viewModel.fetchOtaDetails(device, selectedVariant!!)
                                     },
                                     modifier = Modifier.fillMaxWidth()

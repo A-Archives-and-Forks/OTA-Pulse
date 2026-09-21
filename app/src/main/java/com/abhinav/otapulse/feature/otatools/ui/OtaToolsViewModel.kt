@@ -625,3 +625,4 @@ class OtaToolsViewModel @Inject constructor(
         return "${cleanBase}${nvSuffix}_11.${letter}.01_0001_100001010000"
     }
 }
+

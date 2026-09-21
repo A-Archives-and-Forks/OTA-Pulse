@@ -248,3 +248,4 @@ class WavyCircularProgressIndicator @JvmOverloads constructor(
         return MaterialColors.getColor(context, AppCompatR.attr.colorPrimary, 0xFF6200EE.toInt())
     }
 }
+

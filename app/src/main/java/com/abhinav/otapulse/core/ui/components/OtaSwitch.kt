@@ -32,6 +32,9 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.ui.theme.OtaPulseMotion
 
 /**
@@ -44,6 +47,7 @@ fun OtaSwitch(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
+    val view = LocalView.current
     val icon: @Composable (() -> Unit) = {
         AnimatedContent(
             targetState = checked,
@@ -67,7 +71,10 @@ fun OtaSwitch(
     Switch(
         modifier = modifier,
         checked = checked,
-        onCheckedChange = onCheckedChange,
+        onCheckedChange = if (onCheckedChange != null) { newValue ->
+            view.haptic(if (newValue) HapticType.TOGGLE_ON else HapticType.TOGGLE_OFF)
+            onCheckedChange.invoke(newValue)
+        } else null,
         enabled = enabled,
         thumbContent = icon,
         colors = SwitchDefaults.colors(
@@ -81,3 +88,4 @@ fun OtaSwitch(
         )
     )
 }
+

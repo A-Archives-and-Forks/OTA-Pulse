@@ -142,3 +142,4 @@ object Crypto {
         return hash.joinToString("") { "%02x".format(it) }
     }
 }
+

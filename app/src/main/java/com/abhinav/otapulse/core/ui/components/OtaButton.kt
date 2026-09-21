@@ -57,10 +57,14 @@ import androidx.compose.ui.unit.dp
 import com.abhinav.otapulse.core.ui.theme.HoloGradientStops
 import com.abhinav.otapulse.core.ui.theme.OtaPulseMotion
 import com.abhinav.otapulse.core.ui.theme.OtaPulseTheme
+import com.abhinav.otapulse.core.ui.theme.LocalReduceMotion
 import com.abhinav.otapulse.core.ui.theme.holographicEdge
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.rememberHaptic
 
 @Composable
 private fun rememberPressScale(interactionSource: MutableInteractionSource): Float {
+    if (LocalReduceMotion.current) return 1f
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.96f else 1f,
@@ -147,6 +151,7 @@ fun OtaPrimaryButton(
     val interactionSource = remember { MutableInteractionSource() }
     val scale = rememberPressScale(interactionSource)
     val isHolo = OtaPulseTheme.holographicConfig.isEnabled
+    val haptic = rememberHaptic()
     val minHeight = if (compact) 42.dp else 52.dp
     val hPad = if (compact) 16.dp else 24.dp
     val vPad = if (compact) 10.dp else 14.dp
@@ -163,7 +168,7 @@ fun OtaPrimaryButton(
                     interactionSource = interactionSource,
                     indication = LocalIndication.current,
                     enabled = enabled && !isLoading,
-                    onClick = onClick
+                    onClick = { haptic(HapticType.CLICK); onClick() }
                 )
                 .padding(horizontal = hPad, vertical = vPad),
             contentAlignment = Alignment.Center
@@ -174,7 +179,7 @@ fun OtaPrimaryButton(
         }
     } else {
         Button(
-            onClick = { if (!isLoading) onClick() },
+            onClick = { if (!isLoading) { haptic(HapticType.CLICK); onClick() } },
             modifier = modifier.scale(scale).heightIn(min = minHeight),
             enabled = enabled,
             interactionSource = interactionSource,
@@ -202,13 +207,14 @@ fun OtaOutlinedButton(
     val interactionSource = remember { MutableInteractionSource() }
     val scale = rememberPressScale(interactionSource)
     val isHolo = OtaPulseTheme.holographicConfig.isEnabled
+    val haptic = rememberHaptic()
     val minHeight = if (compact) 42.dp else 52.dp
     val hPad = if (compact) 16.dp else 24.dp
     val vPad = if (compact) 10.dp else 14.dp
 
     if (isHolo && enabled) {
         OutlinedButton(
-            onClick = { if (!isLoading) onClick() },
+            onClick = { if (!isLoading) { haptic(HapticType.CLICK); onClick() } },
             modifier = modifier
                 .scale(scale)
                 .heightIn(min = minHeight)
@@ -226,7 +232,7 @@ fun OtaOutlinedButton(
         }
     } else {
         OutlinedButton(
-            onClick = { if (!isLoading) onClick() },
+            onClick = { if (!isLoading) { haptic(HapticType.CLICK); onClick() } },
             modifier = modifier.scale(scale).heightIn(min = minHeight),
             enabled = enabled,
             interactionSource = interactionSource,
@@ -254,13 +260,14 @@ fun OtaTonalButton(
     val interactionSource = remember { MutableInteractionSource() }
     val scale = rememberPressScale(interactionSource)
     val isHolo = OtaPulseTheme.holographicConfig.isEnabled
+    val haptic = rememberHaptic()
     val minHeight = if (compact) 42.dp else 52.dp
     val hPad = if (compact) 16.dp else 24.dp
     val vPad = if (compact) 10.dp else 14.dp
 
     if (isHolo && enabled) {
         FilledTonalButton(
-            onClick = { if (!isLoading) onClick() },
+            onClick = { if (!isLoading) { haptic(HapticType.CLICK); onClick() } },
             modifier = modifier
                 .scale(scale)
                 .heightIn(min = minHeight)
@@ -278,7 +285,7 @@ fun OtaTonalButton(
         }
     } else {
         FilledTonalButton(
-            onClick = { if (!isLoading) onClick() },
+            onClick = { if (!isLoading) { haptic(HapticType.CLICK); onClick() } },
             modifier = modifier.scale(scale).heightIn(min = minHeight),
             enabled = enabled,
             interactionSource = interactionSource,
@@ -289,3 +296,4 @@ fun OtaTonalButton(
         }
     }
 }
+

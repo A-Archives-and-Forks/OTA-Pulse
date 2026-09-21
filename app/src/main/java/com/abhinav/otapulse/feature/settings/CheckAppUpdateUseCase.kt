@@ -11,3 +11,4 @@ class CheckAppUpdateUseCase @Inject constructor(
         return repository.checkForUpdate(currentVersion)
     }
 }
+

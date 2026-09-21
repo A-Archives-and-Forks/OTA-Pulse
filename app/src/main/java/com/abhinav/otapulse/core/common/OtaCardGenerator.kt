@@ -315,3 +315,4 @@ object OtaCardGenerator {
         )
     }
 }
+

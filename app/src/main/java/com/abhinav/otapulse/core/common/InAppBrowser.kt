@@ -51,3 +51,4 @@ fun Context.openExternalBrowser(url: String) {
 fun Fragment.openExternalBrowser(url: String) {
     requireContext().openExternalBrowser(url)
 }
+

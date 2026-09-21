@@ -62,6 +62,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -74,7 +75,8 @@ import com.abhinav.otapulse.R
 import com.abhinav.otapulse.core.ui.ApplyDialogBlurEffect
 import com.abhinav.otapulse.core.common.LocaleHelper
 import com.abhinav.otapulse.core.common.openExternalBrowser
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.ui.components.OtaOutlinedButton
 import com.abhinav.otapulse.core.ui.components.OtaPrimaryButton
 import com.abhinav.otapulse.core.ui.components.OtaTonalButton
@@ -87,6 +89,7 @@ fun LanguageSelectionDialog(
     onLanguageSelected: (String) -> Unit
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
     val currentLocaleTag = LocaleHelper.getSelectedLocale(context)
 
     val languages = linkedMapOf(
@@ -190,6 +193,7 @@ fun CheckIntervalDialog(
     onIntervalSelected: (Long) -> Unit
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
     val hourValues = listOf(1L, 3L, 6L, 12L, 24L)
     val labels = mapOf(
         1L to context.getString(R.string.settings_check_interval_1h),
@@ -271,6 +275,7 @@ fun ImportConfirmationDialog(
     onConfirm: () -> Unit
 ) {
     val context = LocalContext.current
+    val view = LocalView.current
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Rounded.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.error) },
@@ -298,6 +303,7 @@ fun ImportConfirmationDialog(
 @Composable
 fun DeveloperDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
+    val view = LocalView.current
     Dialog(onDismissRequest = onDismiss) {
         ApplyDialogBlurEffect()
         Surface(
@@ -381,6 +387,7 @@ fun DeveloperDialog(onDismiss: () -> Unit) {
 @Composable
 fun ContributorsDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
+    val view = LocalView.current
     AlertDialog(
         onDismissRequest = onDismiss,
         icon = { Icon(Icons.Rounded.Groups, contentDescription = null, modifier = Modifier.size(40.dp), tint = MaterialTheme.colorScheme.secondary) },
@@ -419,6 +426,7 @@ fun ContributorsDialog(onDismiss: () -> Unit) {
 @Composable
 fun SupportDeveloperDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
+    val view = LocalView.current
     Dialog(onDismissRequest = onDismiss) {
         ApplyDialogBlurEffect()
         Surface(
@@ -452,7 +460,7 @@ fun SupportDeveloperDialog(onDismiss: () -> Unit) {
 
                     IconButton(
                         onClick = {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             onDismiss()
                         },
                         modifier = Modifier
@@ -494,7 +502,7 @@ fun SupportDeveloperDialog(onDismiss: () -> Unit) {
                 // Star on GitHub Button
                 Button(
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         context.openExternalBrowser("https://github.com/RemuruSama/OTA-Pulse")
                         onDismiss()
                     },
@@ -531,7 +539,7 @@ fun SupportDeveloperDialog(onDismiss: () -> Unit) {
                 // Donate Button
                 Button(
                     onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         context.openExternalBrowser("https://paypal.me/Abhinavftp?country.x=IN&locale.x=en_GB")
                         onDismiss()
                     },
@@ -573,7 +581,7 @@ fun SupportDeveloperDialog(onDismiss: () -> Unit) {
                     modifier = Modifier
                         .clip(RoundedCornerShape(8.dp))
                         .clickable {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             onDismiss()
                         }
                         .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -582,3 +590,4 @@ fun SupportDeveloperDialog(onDismiss: () -> Unit) {
         }
     }
 }
+

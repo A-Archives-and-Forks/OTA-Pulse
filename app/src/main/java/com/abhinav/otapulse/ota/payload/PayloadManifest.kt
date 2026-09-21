@@ -67,3 +67,4 @@ class PayloadManifest(
         return DeltaArchiveManifest.parseFrom(bytes)
     }
 }
+

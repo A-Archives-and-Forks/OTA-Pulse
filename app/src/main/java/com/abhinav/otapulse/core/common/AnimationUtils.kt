@@ -48,3 +48,4 @@ object AnimationUtils {
         }
     }
 }
+

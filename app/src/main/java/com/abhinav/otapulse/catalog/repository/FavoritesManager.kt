@@ -28,3 +28,4 @@ class FavoritesManager @Inject constructor(
         return sharedPreferences.all as Map<String, String>
     }
 }
+

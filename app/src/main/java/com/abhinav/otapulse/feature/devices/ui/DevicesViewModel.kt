@@ -362,3 +362,4 @@ class DevicesViewModel @Inject constructor(
         return filteredBySearch.sortedByDescending { it.isFavorite }
     }
 }
+

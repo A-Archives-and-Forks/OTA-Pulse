@@ -10,3 +10,4 @@ import com.abhinav.otapulse.core.model.OtaUpdate
 interface OtaRepository {
     suspend fun fetchOtaUpdate(request: OtaRequest): Result<List<OtaUpdate>>
 }
+

@@ -71,8 +71,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.abhinav.otapulse.catalog.model.PredefinedDevice
 import com.abhinav.otapulse.catalog.model.RegionData
 import com.abhinav.otapulse.catalog.model.RegionInfo
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.model.RegionVariant
+import androidx.compose.ui.platform.LocalView
 import com.abhinav.otapulse.core.ui.components.EmptyState
 import com.abhinav.otapulse.core.ui.components.OtaCard
 import com.abhinav.otapulse.core.ui.components.OtaPrimaryButton
@@ -91,6 +93,7 @@ fun AddDeviceScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
+    val view = LocalView.current
     val focusManager = LocalFocusManager.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -130,7 +133,7 @@ fun AddDeviceScreen(
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.TICK)
                         onNavigateBack()
                     }) {
                         Icon(
@@ -154,7 +157,7 @@ fun AddDeviceScreen(
                         text = if (uiState.isEditMode) "Update Device" else "Save Device",
                         onClick = {
                             focusManager.clearFocus()
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             viewModel.saveDevice(uiState.deviceName)
                         },
                         modifier = Modifier.fillMaxWidth()
@@ -218,7 +221,7 @@ fun AddDeviceScreen(
                     OtaTonalButton(
                         text = "Add Group",
                         onClick = {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             showAddGroupDialog = true
                         },
                         icon = Icons.Rounded.Add
@@ -258,7 +261,7 @@ fun AddDeviceScreen(
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         IconButton(
                                             onClick = {
-                                                context.performHapticFeedback()
+                                                view.haptic(HapticType.CLICK)
                                                 groupToEdit = groupName
                                             },
                                             modifier = Modifier.size(32.dp)
@@ -272,7 +275,7 @@ fun AddDeviceScreen(
                                         }
                                         IconButton(
                                             onClick = {
-                                                context.performHapticFeedback()
+                                                view.haptic(HapticType.HEAVY_CLICK)
                                                 groupToDelete = groupName
                                             },
                                             modifier = Modifier.size(32.dp)
@@ -327,7 +330,7 @@ fun AddDeviceScreen(
                                                     }
                                                     IconButton(
                                                         onClick = {
-                                                            context.performHapticFeedback()
+                                                            view.haptic(HapticType.HEAVY_CLICK)
                                                             viewModel.removeVariantFromGroup(groupName, variant)
                                                         },
                                                         modifier = Modifier.size(28.dp)
@@ -349,7 +352,7 @@ fun AddDeviceScreen(
                                 OtaTonalButton(
                                     text = "Add Variant",
                                     onClick = {
-                                        context.performHapticFeedback()
+                                        view.haptic(HapticType.CLICK)
                                         groupToAddVariant = groupName
                                     },
                                     icon = Icons.Rounded.Add,

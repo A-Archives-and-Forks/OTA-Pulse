@@ -18,3 +18,4 @@ class EnqueueDownloadUseCase @Inject constructor(
         )
     }
 }
+

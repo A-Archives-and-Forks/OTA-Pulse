@@ -66,6 +66,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -75,7 +76,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.abhinav.otapulse.R
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
 import com.abhinav.otapulse.core.ui.components.OtaCard
 import com.abhinav.otapulse.core.ui.components.OtaOutlinedButton
 import com.abhinav.otapulse.core.ui.components.OtaPrimaryButton
@@ -94,6 +96,7 @@ fun PartitionExtractionScreen(
     val uiState by viewModel.uiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val context = LocalContext.current
+    val view = LocalView.current
 
     androidx.compose.runtime.LaunchedEffect(uiState.userMessage) {
         uiState.userMessage?.let { msg ->
@@ -182,7 +185,7 @@ fun PartitionExtractionScreen(
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = {
-                        context.performHapticFeedback()
+                        view.haptic(HapticType.CLICK)
                         onNavigateBack()
                     }) {
                         Icon(
@@ -454,7 +457,7 @@ fun PartitionExtractionScreen(
                                         text = stringResource(R.string.cancel),
                                         icon = Icons.Rounded.Close,
                                         onClick = {
-                                            context.performHapticFeedback()
+                                            view.haptic(HapticType.CLICK)
                                             viewModel.cancelPartitionExtraction(activeWorkId, uiState.activeExtractionNames.firstOrNull() ?: "")
                                         },
                                         compact = true
@@ -464,7 +467,7 @@ fun PartitionExtractionScreen(
                                         text = "Dismiss & Clear",
                                         icon = Icons.Rounded.CheckCircle,
                                         onClick = {
-                                            context.performHapticFeedback()
+                                            view.haptic(HapticType.CLICK)
                                             viewModel.clearActiveExtraction()
                                         },
                                         compact = true
@@ -519,7 +522,7 @@ fun PartitionExtractionScreen(
                                         if (inputUrl.isNotEmpty()) {
                                             IconButton(
                                                 onClick = {
-                                                    context.performHapticFeedback()
+                                                    view.haptic(HapticType.CLICK)
                                                     inputUrl = ""
                                                 },
                                                 modifier = Modifier.size(32.dp)
@@ -534,7 +537,7 @@ fun PartitionExtractionScreen(
                                         } else {
                                             IconButton(
                                                 onClick = {
-                                                    context.performHapticFeedback()
+                                                    view.haptic(HapticType.CLICK)
                                                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                                     val clipData = clipboard.primaryClip
                                                     if (clipData != null && clipData.itemCount > 0) {
@@ -565,7 +568,7 @@ fun PartitionExtractionScreen(
                             icon = if (isUrlFetching) null else Icons.Rounded.Search,
                             isLoading = isUrlFetching,
                             onClick = {
-                                context.performHapticFeedback()
+                                view.haptic(HapticType.CLICK)
                                 val trimmed = inputUrl.trim()
                                 if (trimmed.isBlank()) {
                                     Toast.makeText(context, context.getString(R.string.toast_paste_ota_url_first), Toast.LENGTH_SHORT).show()
@@ -619,7 +622,7 @@ fun PartitionExtractionScreen(
                             // Sleek Interactive Dropzone Box when no file is chosen
                             Surface(
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.CLICK)
                                     pickLocalZipLauncher.launch(arrayOf("application/zip", "application/octet-stream"))
                                 },
                                 shape = RoundedCornerShape(16.dp),
@@ -665,7 +668,7 @@ fun PartitionExtractionScreen(
                             // Sleek Selected File Preview Card (clickable to change or clear via X)
                             Surface(
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.CLICK)
                                     pickLocalZipLauncher.launch(arrayOf("application/zip", "application/octet-stream"))
                                 },
                                 color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.7f),
@@ -694,7 +697,7 @@ fun PartitionExtractionScreen(
                                     }
                                     IconButton(
                                         onClick = {
-                                            context.performHapticFeedback()
+                                            view.haptic(HapticType.CLICK)
                                             selectedLocalUri = null
                                             selectedLocalName = ""
                                         }
@@ -714,7 +717,7 @@ fun PartitionExtractionScreen(
                                 icon = if (isLocalFetching) null else Icons.Rounded.Search,
                                 isLoading = isLocalFetching,
                                 onClick = {
-                                    context.performHapticFeedback()
+                                    view.haptic(HapticType.CLICK)
                                     val uri = selectedLocalUri
                                     if (uri == null) {
                                         Toast.makeText(context, context.getString(R.string.toast_choose_local_zip_first), Toast.LENGTH_SHORT).show()
@@ -768,3 +771,4 @@ private fun resolveDisplayName(context: android.content.Context, uri: Uri): Stri
     }
     return name
 }
+

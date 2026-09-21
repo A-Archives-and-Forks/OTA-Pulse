@@ -89,3 +89,4 @@ object AppUpdateDownloader {
         }
     }.flowOn(Dispatchers.IO)
 }
+

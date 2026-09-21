@@ -89,7 +89,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.abhinav.otapulse.R
 import android.widget.Toast
-import com.abhinav.otapulse.core.common.performHapticFeedback
+import com.abhinav.otapulse.core.common.HapticType
+import com.abhinav.otapulse.core.common.haptic
+import androidx.compose.ui.platform.LocalView
 import com.abhinav.otapulse.core.common.FormatUtils
 import com.abhinav.otapulse.core.model.OtaUpdate
 import com.abhinav.otapulse.core.ui.components.OtaCard
@@ -139,6 +141,7 @@ fun OtaDetailsSheet(
     }
 
     val context = LocalContext.current
+    val view = LocalView.current
     val workInfoFromId by produceState<WorkInfo?>(initialValue = null, activeWorkId) {
         val id = activeWorkId
         if (id != null) {
@@ -569,7 +572,7 @@ fun OtaDetailsSheet(
                 androidx.compose.material3.Button(
                     onClick = {
                         if (isExtracting && extractionProgress != 100) {
-                            context.performHapticFeedback()
+                            view.haptic(HapticType.CLICK)
                             val idToCancel = activeWorkId ?: workInfo?.id
                             if (idToCancel != null) {
                                 WorkManager.getInstance(context).cancelWorkById(idToCancel)
@@ -1004,3 +1007,4 @@ private fun ActionIconButton(
         }
     }
 }
+

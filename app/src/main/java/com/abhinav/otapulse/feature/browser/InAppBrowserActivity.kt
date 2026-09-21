@@ -80,3 +80,4 @@ class InAppBrowserActivity : ComponentActivity() {
         }
     }
 }
+

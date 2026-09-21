@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 /**
  * Staggered Bento Grid Layout for device catalogs and dashboards.
  *
- * Uses LazyVerticalStaggeredGrid with automatic item placement animations
- * and configurable column counts.
+ * Uses LazyVerticalStaggeredGrid with automatic item placement animations,
+ * staggered entrance animations, and configurable column counts.
  */
 @Composable
 fun <T> BentoGrid(
@@ -40,6 +40,7 @@ fun <T> BentoGrid(
     columns: Int = 2,
     contentPadding: PaddingValues = PaddingValues(16.dp),
     itemSpacing: Dp = 12.dp,
+    sessionKey: String = "",
     key: ((T) -> Any)? = null,
     itemContent: @Composable (T) -> Unit
 ) {
@@ -50,13 +51,18 @@ fun <T> BentoGrid(
         horizontalArrangement = Arrangement.spacedBy(itemSpacing),
         verticalItemSpacing = itemSpacing
     ) {
-        items(
+        itemsIndexed(
             items = items,
-            key = key
-        ) { item ->
-            Box(modifier = Modifier.animateItem()) {
+            key = if (key != null) { index, item -> key(item) } else null
+        ) { index, item ->
+            Box(
+                modifier = Modifier
+                    .stackItemAppearance(index, sessionKey)
+                    .animateItem()
+            ) {
                 itemContent(item)
             }
         }
     }
 }
+

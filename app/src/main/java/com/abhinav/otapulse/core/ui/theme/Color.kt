@@ -218,3 +218,4 @@ val HoloExtendedColors = OtaPulseExtendedColors(
 )
 
 val LocalOtaPulseExtendedColors = staticCompositionLocalOf { LightExtendedColors }
+

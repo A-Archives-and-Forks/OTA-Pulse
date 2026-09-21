@@ -26,3 +26,4 @@ enum class ThemeMode {
     MATERIAL_YOU,
     HOLOGRAPHIC
 }
+

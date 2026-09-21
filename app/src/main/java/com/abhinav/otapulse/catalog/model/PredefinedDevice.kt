@@ -18,3 +18,4 @@ data class PredefinedDevice(
     var isLoadingDetails: Boolean = false,
     val isCustom: Boolean = false // New property with a default value
 ) : Parcelable
+

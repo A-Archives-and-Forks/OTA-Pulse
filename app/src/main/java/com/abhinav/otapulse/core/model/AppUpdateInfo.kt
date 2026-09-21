@@ -9,3 +9,4 @@ data class AppUpdateInfo(
     val downloadUrl: String,
     val changelog: String
 ) : Parcelable
+
