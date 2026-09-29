@@ -11,6 +11,7 @@ import android.os.StatFs
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager
+import com.abhinav.otapulse.catalog.model.RegionData
 import java.io.File
 import java.text.DecimalFormat
 
@@ -42,6 +43,82 @@ object DeviceUtils {
     fun getIncrementalOsVersion(): String = Build.VERSION.INCREMENTAL
     fun getSecurityPatch(): String = Build.VERSION.SECURITY_PATCH
     fun getDeviceBrand(): String = getSystemProperty("ro.product.brand")
+
+    fun getDeviceRegion(): String {
+        val regionProps = listOf(
+            "ro.vendor.oplus.regionmark",
+            "ro.oplus.pipeline.region",
+            "sys.region.switch.country",
+            "ro.vendor.oplus.radio.sar_regionmark",
+            "persist.sys.oplus.region"
+        )
+        for (prop in regionProps) {
+            val valStr = getSystemProperty(prop).trim().uppercase()
+            if (valStr.isNotBlank() && valStr != "UNKNOWN") {
+                val mapped = when (valStr) {
+                    "EEA" -> "EU"
+                    else -> valStr
+                }
+                return mapped
+            }
+        }
+
+        val localeProp = getSystemProperty("ro.product.locale").trim()
+        if (localeProp.contains("-")) {
+            val country = localeProp.substringAfter("-").uppercase()
+            if (country.length == 2) return country
+        }
+
+        val rawNvId = getSystemProperty("ro.build.oplus_nv_id").trim()
+        if (rawNvId.isNotBlank()) {
+            val nvIdToSearch = if (rawNvId.length == 8 && rawNvId.all { it == '0' || it == '1' }) {
+                try {
+                    val decimalVal = rawNvId.toInt(2)
+                    "NV" + decimalVal.toString(16).uppercase()
+                } catch (_: Exception) {
+                    rawNvId
+                }
+            } else {
+                rawNvId
+            }
+            val nvRegion = RegionData.regions.firstOrNull {
+                it.nvid.equals(nvIdToSearch, ignoreCase = true)
+            }?.displayName
+            if (!nvRegion.isNullOrBlank()) return nvRegion
+        }
+
+        val nameCandidates = listOf(
+            getSystemProperty("ro.product.name"),
+            getSystemProperty("ro.product.vendor.name"),
+            getSystemProperty("ro.product.odm.name"),
+            getSystemProperty("ro.product.model")
+        )
+        for (name in nameCandidates) {
+            if (name.isBlank()) continue
+            val matched = when {
+                name.endsWith("EEA", ignoreCase = true) -> "EU"
+                name.endsWith("EU", ignoreCase = true) -> "EU"
+                name.endsWith("IN", ignoreCase = true) -> "IN"
+                name.endsWith("RU", ignoreCase = true) -> "RU"
+                name.endsWith("CN", ignoreCase = true) -> "CN"
+                name.endsWith("TR", ignoreCase = true) -> "TR"
+                name.endsWith("GLO", ignoreCase = true) -> "GLO"
+                name.endsWith("VN", ignoreCase = true) -> "VN"
+                name.endsWith("TW", ignoreCase = true) -> "TW"
+                name.endsWith("MY", ignoreCase = true) -> "MY"
+                name.endsWith("ID", ignoreCase = true) -> "ID"
+                name.endsWith("BR", ignoreCase = true) -> "BR"
+                name.endsWith("SA", ignoreCase = true) -> "SA"
+                name.endsWith("TH", ignoreCase = true) -> "TH"
+                name.endsWith("KZ", ignoreCase = true) -> "KZ"
+                name.endsWith("PH", ignoreCase = true) -> "PH"
+                else -> null
+            }
+            if (matched != null) return matched
+        }
+
+        return ""
+    }
 
     fun getOtaVersionLetter(): String {
         val patterns = listOf(

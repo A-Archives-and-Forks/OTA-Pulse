@@ -92,6 +92,7 @@ import com.abhinav.otapulse.R
 import com.abhinav.otapulse.core.common.FormatUtils
 import com.abhinav.otapulse.core.common.OtaCardData
 import com.abhinav.otapulse.core.common.OtaShareHelper
+import com.abhinav.otapulse.core.common.toFullRegionName
 import com.abhinav.otapulse.core.model.OtaUpdate
 import com.abhinav.otapulse.core.ui.components.ErrorState
 import com.abhinav.otapulse.core.ui.components.LoadingState
@@ -122,6 +123,7 @@ fun HomeUpdateScreen(
         onUpdateModel = viewModel::updateModel,
         onUpdateName = viewModel::updateName,
         onUpdateNvId = viewModel::updateNvId,
+        onUpdateDeviceRegion = viewModel::updateDeviceRegion,
         onUpdateVersionLetter = viewModel::updateVersionLetter,
         onUpdateReqMode = viewModel::updateReqMode,
         onCheckForUpdate = viewModel::checkForUpdate,
@@ -144,6 +146,7 @@ fun HomeUpdateContent(
     onUpdateModel: (String) -> Unit = {},
     onUpdateName: (String) -> Unit = {},
     onUpdateNvId: (String) -> Unit = {},
+    onUpdateDeviceRegion: (String) -> Unit = {},
     onUpdateVersionLetter: (String) -> Unit = {},
     onUpdateReqMode: (String) -> Unit = {},
     onCheckForUpdate: () -> Unit = {},
@@ -299,13 +302,48 @@ fun HomeUpdateContent(
                                         fontWeight = FontWeight.Black,
                                         color = MaterialTheme.colorScheme.onSurface
                                     )
-                                    Text(
-                                        text = uiState.deviceName.ifBlank { stringResource(R.string.unknown) },
-                                        style = MaterialTheme.typography.titleSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                                            alpha = 0.7f
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        modifier = Modifier.padding(top = 2.dp)
+                                    ) {
+                                        Text(
+                                            text = uiState.deviceName.ifBlank { stringResource(R.string.unknown) },
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                                                alpha = 0.7f
+                                            )
                                         )
-                                    )
+
+                                        if (uiState.deviceRegion.isNotBlank()) {
+                                            Surface(
+                                                color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.6f),
+                                                border = BorderStroke(
+                                                    1.dp,
+                                                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f)
+                                                ),
+                                                shape = RoundedCornerShape(6.dp)
+                                            ) {
+                                                Row(
+                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                                ) {
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.ic_language),
+                                                        contentDescription = null,
+                                                        tint = MaterialTheme.colorScheme.secondary,
+                                                        modifier = Modifier.size(12.dp)
+                                                    )
+                                                    Text(
+                                                        text = "${uiState.deviceRegion} (${uiState.deviceRegion.toFullRegionName()})",
+                                                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                                        color = MaterialTheme.colorScheme.onSecondaryContainer
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
 
                                 Surface(
@@ -334,20 +372,37 @@ fun HomeUpdateContent(
                             // Current Version section
                             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_ota_version),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.software_update_panel_version_label),
-                                        style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_ota_version),
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.software_update_panel_version_label),
+                                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+
+                                    if (uiState.nvId.isNotBlank()) {
+                                        Text(
+                                            text = "NV ID: ${uiState.nvId}",
+                                            style = MaterialTheme.typography.labelSmall.copy(
+                                                fontFamily = FontFamily.Monospace,
+                                                fontWeight = FontWeight.Bold
+                                            ),
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
+                                        )
+                                    }
                                 }
 
                                 val currentVer = uiState.osVersion.ifBlank {
@@ -407,22 +462,35 @@ fun HomeUpdateContent(
                         )
 
                         OtaTextField(
-                        value = uiState.deviceModel,
-                        onValueChange = { onUpdateModel(it) },
-                        label = { Text(stringResource(R.string.home_model_required_label)) }
-                    )
+                            value = uiState.deviceModel,
+                            onValueChange = { onUpdateModel(it) },
+                            label = { Text(stringResource(R.string.home_model_required_label)) }
+                        )
 
-                    OtaTextField(
-                        value = uiState.deviceName,
-                        onValueChange = { onUpdateName(it) },
-                        label = { Text(stringResource(R.string.home_name_label)) }
-                    )
+                        OtaTextField(
+                            value = uiState.deviceName,
+                            onValueChange = { onUpdateName(it) },
+                            label = { Text(stringResource(R.string.home_name_label)) }
+                        )
 
-                    OtaTextField(
-                        value = uiState.nvId,
-                        onValueChange = { onUpdateNvId(it) },
-                        label = { Text(stringResource(R.string.home_nv_id_label)) }
-                    )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            OtaTextField(
+                                value = uiState.deviceRegion,
+                                onValueChange = { onUpdateDeviceRegion(it) },
+                                label = { Text("Device Region") },
+                                modifier = Modifier.weight(1f)
+                            )
+
+                            OtaTextField(
+                                value = uiState.nvId,
+                                onValueChange = { onUpdateNvId(it) },
+                                label = { Text(stringResource(R.string.home_nv_id_label)) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),

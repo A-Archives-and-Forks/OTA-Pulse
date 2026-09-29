@@ -24,6 +24,7 @@ data class HomeUpdateUiState(
     val deviceName: String = "",
     val marketName: String = "",
     val nvId: String = "",
+    val deviceRegion: String = "",
     val versionLetter: String = "A",
     val reqMode: String = "manual",
     val osVersion: String = "",

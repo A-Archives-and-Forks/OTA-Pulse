@@ -67,12 +67,14 @@ class HomeUpdateViewModel @Inject constructor(
         val osVersion = DeviceUtils.getOsVersion()
         val displayOtaVersion = DeviceUtils.getDisplayOtaVersion()
         val fallbackOtaVersion = DeviceUtils.getOtaVersion()
+        val detectedRegion = DeviceUtils.getDeviceRegion()
 
         val defaultModel = if (model.isNotBlank()) model else "RMX3840"
         val defaultName = if (name.isNotBlank()) name else defaultModel
         val defaultMarket = if (marketName.isNotBlank()) marketName else defaultName
         val defaultLetter = if (otaVersionLetter.isNotBlank()) otaVersionLetter else "A"
         val defaultReq = if (isOnePlusDevice()) "taste" else "manual"
+        val defaultRegion = if (detectedRegion.isNotBlank()) detectedRegion else inferRegionFromNvId(nvId)
 
         _uiState.update {
             it.copy(
@@ -80,6 +82,7 @@ class HomeUpdateViewModel @Inject constructor(
                 deviceName = defaultName,
                 marketName = defaultMarket,
                 nvId = nvId,
+                deviceRegion = defaultRegion,
                 versionLetter = defaultLetter,
                 reqMode = defaultReq,
                 osVersion = osVersion,
@@ -98,7 +101,17 @@ class HomeUpdateViewModel @Inject constructor(
     }
 
     fun updateNvId(value: String) {
-        _uiState.update { it.copy(nvId = value) }
+        val inferred = inferRegionFromNvId(value)
+        _uiState.update { state ->
+            state.copy(
+                nvId = value,
+                deviceRegion = if (inferred != "GLO" || state.deviceRegion.isBlank()) inferred else state.deviceRegion
+            )
+        }
+    }
+
+    fun updateDeviceRegion(value: String) {
+        _uiState.update { it.copy(deviceRegion = value) }
     }
 
     fun updateVersionLetter(value: String) {
@@ -142,15 +155,21 @@ class HomeUpdateViewModel @Inject constructor(
         }
 
         val baseOtaVersion = getBaseOtaString(model)
-        val region = inferRegionFromNvId(nvIdInput)
+        val selectedRegion = _uiState.value.deviceRegion.trim().ifBlank { inferRegionFromNvId(nvIdInput) }
+        val region = selectedRegion
         val apiModelParam = if (name.isNotBlank()) name else model
         val finalNvId = nvIdInput
 
-        val serverSearchOrder = listOf("EU", "GL", "IN", "CN")
+        val baseServerSearchOrder = when (selectedRegion.uppercase()) {
+            "IN" -> listOf("IN", "GL", "EU", "CN")
+            "CN" -> listOf("CN", "GL", "EU", "IN")
+            "EU", "RU", "TR" -> listOf("EU", "GL", "IN", "CN")
+            else -> listOf("EU", "GL", "IN", "CN")
+        }
         val customSearchOrder = if (finalNvId == "10010111") {
-            listOf("CN") + (serverSearchOrder - "CN")
+            listOf("CN") + (baseServerSearchOrder - "CN")
         } else {
-            serverSearchOrder
+            baseServerSearchOrder
         }
 
         val letters = listOf("A", "C", "F", "H", "J")
